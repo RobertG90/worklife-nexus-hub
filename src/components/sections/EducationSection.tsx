@@ -6,28 +6,17 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { GraduationCap, Users, Calendar, Star, Search } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { courses, events } from '@/data/educationData';
 
 export function EducationSection() {
   const [filter, setFilter] = useState('all');
   const navigate = useNavigate();
 
-  const courses = [
-    { id: 1, title: 'Advanced React Development', category: 'Technical', duration: '6 weeks', rating: 4.8, enrolled: 45, nextStart: '2024-02-01' },
-    { id: 2, title: 'Leadership Essentials', category: 'Management', duration: '4 weeks', rating: 4.9, enrolled: 32, nextStart: '2024-02-15' },
-    { id: 3, title: 'Data Analysis with Python', category: 'Technical', duration: '8 weeks', rating: 4.7, enrolled: 28, nextStart: '2024-02-08' },
-  ];
-
-  const events = [
-    { id: 1, title: 'Team Building Escape Room', date: '2024-01-25', participants: 12, type: 'Team Building' },
-    { id: 2, title: 'Tech Talk: AI in Practice', date: '2024-01-30', participants: 25, type: 'Learning' },
-    { id: 3, title: 'Company Bowling Night', date: '2024-02-05', participants: 18, type: 'Social' },
-  ];
-
-  const handleEventClick = (eventId: number) => {
+  const handleEventClick = (eventId: string) => {
     navigate(`/event/${eventId}`);
   };
 
-  const handleCourseEnroll = (courseId: number) => {
+  const handleCourseEnroll = (courseId: string) => {
     navigate(`/course/${courseId}`);
   };
 

@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Card } from '@/components/ui/card';
@@ -7,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { ArrowLeft, Calendar, Users, MapPin } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { events } from '@/data/educationData';
 
 const EventDetails = () => {
   const { id } = useParams();
@@ -14,43 +14,6 @@ const EventDetails = () => {
   const { toast } = useToast();
   const [email, setEmail] = useState('');
   const [isEnrolling, setIsEnrolling] = useState(false);
-
-  // Mock event data - in a real app, this would come from your database
-  const events = [
-    { 
-      id: '1', 
-      title: 'Team Building Escape Room', 
-      date: '2024-01-25', 
-      participants: 12, 
-      type: 'Team Building',
-      description: 'Join your colleagues for an exciting escape room challenge! Work together to solve puzzles and build stronger team bonds.',
-      location: 'Downtown Escape Rooms',
-      duration: '2 hours',
-      maxParticipants: 20
-    },
-    { 
-      id: '2', 
-      title: 'Tech Talk: AI in Practice', 
-      date: '2024-01-30', 
-      participants: 25, 
-      type: 'Learning',
-      description: 'Learn about the latest AI trends and how they are being implemented in real-world applications. Guest speaker from industry leaders.',
-      location: 'Conference Room A',
-      duration: '1.5 hours',
-      maxParticipants: 50
-    },
-    { 
-      id: '3', 
-      title: 'Company Bowling Night', 
-      date: '2024-02-05', 
-      participants: 18, 
-      type: 'Social',
-      description: 'Relax and have fun with your teammates at our monthly bowling night. Food and drinks included!',
-      location: 'Strike Zone Bowling',
-      duration: '3 hours',
-      maxParticipants: 30
-    },
-  ];
 
   const event = events.find(e => e.id === id);
 

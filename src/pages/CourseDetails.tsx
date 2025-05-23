@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Card } from '@/components/ui/card';
@@ -7,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { ArrowLeft, Clock, Users, Star, Calendar } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { courses } from '@/data/educationData';
 
 const CourseDetails = () => {
   const { id } = useParams();
@@ -14,52 +14,6 @@ const CourseDetails = () => {
   const { toast } = useToast();
   const [email, setEmail] = useState('');
   const [isEnrolling, setIsEnrolling] = useState(false);
-
-  // Mock course data - in a real app, this would come from your database
-  const courses = [
-    { 
-      id: '1', 
-      title: 'Advanced React Development', 
-      category: 'Technical', 
-      duration: '6 weeks', 
-      rating: 4.8, 
-      enrolled: 45, 
-      nextStart: '2024-02-01',
-      maxEnrollment: 50,
-      description: 'Master advanced React concepts including hooks, context, performance optimization, and modern patterns. Learn to build scalable applications with TypeScript, testing, and state management libraries.',
-      instructor: 'Sarah Johnson',
-      level: 'Advanced',
-      prerequisites: 'Basic React knowledge required'
-    },
-    { 
-      id: '2', 
-      title: 'Leadership Essentials', 
-      category: 'Management', 
-      duration: '4 weeks', 
-      rating: 4.9, 
-      enrolled: 32, 
-      nextStart: '2024-02-15',
-      maxEnrollment: 40,
-      description: 'Develop essential leadership skills for managing teams and driving organizational success. Cover communication, delegation, conflict resolution, and strategic thinking.',
-      instructor: 'Michael Chen',
-      level: 'Intermediate',
-      prerequisites: 'Management experience preferred'
-    },
-    { 
-      id: '3', 
-      title: 'Data Analysis with Python', 
-      category: 'Technical', 
-      duration: '8 weeks', 
-      rating: 4.7, 
-      enrolled: 28, 
-      nextStart: '2024-02-08',
-      maxEnrollment: 35,
-      description: 'Learn to analyze data using Python libraries like Pandas, NumPy, and Matplotlib. Cover data cleaning, visualization, statistical analysis, and machine learning basics.',
-      instructor: 'Dr. Emily Rodriguez',
-      level: 'Beginner to Intermediate',
-      prerequisites: 'Basic programming knowledge helpful'
-    },
-  ];
 
   const course = courses.find(c => c.id === id);
 
