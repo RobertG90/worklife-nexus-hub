@@ -37,7 +37,7 @@ export default function UpcomingTripsCalendar() {
             <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Upcoming Trips Calendar</h1>
             <p className="text-gray-600 mt-1">View and manage your upcoming business trips</p>
           </div>
-          <NavigationButtons />
+          <NavigationButtons showCalendar={false} />
         </div>
         
         {/* Calendar */}

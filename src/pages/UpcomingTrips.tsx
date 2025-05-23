@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { NavigationButtons } from '@/components/NavigationButtons';
 import { useQuery } from '@tanstack/react-query';
@@ -41,7 +42,7 @@ export default function UpcomingTrips() {
             <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Upcoming Trips</h1>
             <p className="text-gray-600 mt-1">View and manage your upcoming business trips</p>
           </div>
-          <NavigationButtons />
+          <NavigationButtons showTrips={false} />
         </div>
         
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">

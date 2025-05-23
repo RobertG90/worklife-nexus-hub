@@ -1,12 +1,14 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Home } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { ArrowLeft, Home, Calendar, Briefcase } from 'lucide-react';
+import { useNavigate, Link } from 'react-router-dom';
 
 interface NavigationButtonsProps {
   showBack?: boolean;
   showHome?: boolean;
+  showCalendar?: boolean; 
+  showTrips?: boolean;
   onSectionChange?: (section: string) => void;
   className?: string;
 }
@@ -14,6 +16,8 @@ interface NavigationButtonsProps {
 export function NavigationButtons({ 
   showBack = true, 
   showHome = true, 
+  showCalendar = true,
+  showTrips = true,
   onSectionChange,
   className = "" 
 }: NavigationButtonsProps) {
@@ -53,6 +57,32 @@ export function NavigationButtons({
         >
           <Home className="w-4 h-4" />
           Home
+        </Button>
+      )}
+      {showCalendar && (
+        <Button
+          variant="outline"
+          size="sm"
+          asChild
+          className="flex items-center gap-2"
+        >
+          <Link to="/upcoming-trips-calendar">
+            <Calendar className="w-4 h-4" />
+            Calendar
+          </Link>
+        </Button>
+      )}
+      {showTrips && (
+        <Button
+          variant="outline"
+          size="sm"
+          asChild
+          className="flex items-center gap-2"
+        >
+          <Link to="/upcoming-trips">
+            <Briefcase className="w-4 h-4" />
+            Trips
+          </Link>
         </Button>
       )}
     </div>
