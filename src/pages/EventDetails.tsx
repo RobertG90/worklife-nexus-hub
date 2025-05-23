@@ -19,11 +19,11 @@ const EventDetails = () => {
 
   if (!event) {
     return (
-      <div className="min-h-screen bg-gray-50 p-8">
+      <div className="min-h-screen bg-gray-50 p-4 sm:p-8">
         <div className="max-w-4xl mx-auto">
           <div className="text-center py-8">
-            <h1 className="text-2xl font-bold text-gray-900 mb-4">Event Not Found</h1>
-            <Button onClick={() => navigate('/education')}>
+            <h1 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4">Event Not Found</h1>
+            <Button onClick={() => navigate('/education')} size="sm">
               <ArrowLeft className="w-4 h-4 mr-2" />
               Back to Education
             </Button>
@@ -71,31 +71,33 @@ const EventDetails = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-8">
-      <div className="max-w-4xl mx-auto space-y-8">
+    <div className="min-h-screen bg-gray-50 p-4 sm:p-8">
+      <div className="max-w-4xl mx-auto space-y-6 sm:space-y-8">
         {/* Header */}
         <div className="flex items-center justify-between">
           <Button 
             variant="outline" 
             onClick={() => navigate('/education')}
             className="flex items-center space-x-2"
+            size="sm"
           >
             <ArrowLeft className="w-4 h-4" />
-            <span>Back to Education</span>
+            <span className="hidden sm:inline">Back to Education</span>
+            <span className="sm:hidden">Back</span>
           </Button>
         </div>
 
         {/* Event Details */}
-        <Card className="p-8">
+        <Card className="p-4 sm:p-6 lg:p-8">
           <div className="space-y-6">
             {/* Event Header */}
-            <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+            <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
               <div className="flex-1">
-                <h1 className="text-3xl font-bold text-gray-900 mb-2">{event.title}</h1>
+                <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">{event.title}</h1>
                 <Badge className={getTypeColor(event.type)}>{event.type}</Badge>
               </div>
-              <div className="text-right">
-                <div className="text-2xl font-bold text-gray-900">
+              <div className="text-left lg:text-right">
+                <div className="text-xl sm:text-2xl font-bold text-gray-900">
                   {event.participants}/{event.maxParticipants}
                 </div>
                 <div className="text-sm text-gray-600">participants</div>
@@ -103,26 +105,26 @@ const EventDetails = () => {
             </div>
 
             {/* Event Info */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
               <div className="flex items-center space-x-3">
-                <Calendar className="w-5 h-5 text-gray-400" />
+                <Calendar className="w-5 h-5 text-gray-400 flex-shrink-0" />
                 <div>
-                  <div className="font-medium text-gray-900">Date</div>
-                  <div className="text-gray-600">{new Date(event.date).toLocaleDateString()}</div>
+                  <div className="font-medium text-gray-900 text-sm sm:text-base">Date</div>
+                  <div className="text-gray-600 text-sm">{new Date(event.date).toLocaleDateString()}</div>
                 </div>
               </div>
               <div className="flex items-center space-x-3">
-                <MapPin className="w-5 h-5 text-gray-400" />
+                <MapPin className="w-5 h-5 text-gray-400 flex-shrink-0" />
                 <div>
-                  <div className="font-medium text-gray-900">Location</div>
-                  <div className="text-gray-600">{event.location}</div>
+                  <div className="font-medium text-gray-900 text-sm sm:text-base">Location</div>
+                  <div className="text-gray-600 text-sm">{event.location}</div>
                 </div>
               </div>
               <div className="flex items-center space-x-3">
-                <Users className="w-5 h-5 text-gray-400" />
+                <Users className="w-5 h-5 text-gray-400 flex-shrink-0" />
                 <div>
-                  <div className="font-medium text-gray-900">Duration</div>
-                  <div className="text-gray-600">{event.duration}</div>
+                  <div className="font-medium text-gray-900 text-sm sm:text-base">Duration</div>
+                  <div className="text-gray-600 text-sm">{event.duration}</div>
                 </div>
               </div>
             </div>
@@ -130,7 +132,7 @@ const EventDetails = () => {
             {/* Description */}
             <div>
               <h3 className="text-lg font-semibold text-gray-900 mb-3">About this Event</h3>
-              <p className="text-gray-600 leading-relaxed">{event.description}</p>
+              <p className="text-gray-600 leading-relaxed text-sm sm:text-base">{event.description}</p>
             </div>
 
             {/* Enrollment Form */}
@@ -148,13 +150,14 @@ const EventDetails = () => {
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="Enter your email address"
                     required
-                    className="max-w-md"
+                    className="w-full sm:max-w-md"
                   />
                 </div>
                 <Button 
                   type="submit" 
                   disabled={isEnrolling || event.participants >= event.maxParticipants}
-                  className="w-full md:w-auto"
+                  className="w-full sm:w-auto"
+                  size="sm"
                 >
                   {isEnrolling ? 'Enrolling...' : event.participants >= event.maxParticipants ? 'Event Full' : 'Enroll Now'}
                 </Button>
