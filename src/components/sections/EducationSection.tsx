@@ -4,12 +4,15 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Calendar, GraduationCap } from 'lucide-react';
-import { events, courses } from '@/data/educationData';
 import { Link } from 'react-router-dom';
 import { NavigationButtons } from '@/components/NavigationButtons';
+import { useEvents } from '@/hooks/useEvents';
+import { useCourses } from '@/hooks/useCourses';
 
 export function EducationSection() {
   const [activeTab, setActiveTab] = useState('events');
+  const { events } = useEvents();
+  const { courses } = useCourses();
 
   const handleTabChange = (value: string) => {
     setActiveTab(value);

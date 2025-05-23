@@ -1,44 +1,20 @@
+
 import React from 'react';
 import { useParams } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
 import { NavigationButtons } from '@/components/NavigationButtons';
-
-interface Event {
-  id: string;
-  title: string;
-  description: string;
-  date: string;
-  location: string;
-}
+import { useEvents } from '@/hooks/useEvents';
 
 export default function EventDetails() {
   const { id } = useParams<{ id: string }>();
-
-  const { data: event, isLoading, isError } = useQuery<Event, Error>({
-    queryKey: ['event', id],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('events')
-        .select('*')
-        .eq('id', id)
-        .single();
-
-      if (error) {
-        throw new Error(error.message);
-      }
-
-      return data as Event;
-    },
-    enabled: !!id,
-  });
+  const { getEventById, isLoading } = useEvents();
+  const event = id ? getEventById(id) : undefined;
 
   if (isLoading) {
     return <div>Loading event details...</div>;
   }
 
-  if (isError) {
-    return <div>Error loading event details.</div>;
+  if (!event) {
+    return <div>Event not found or error loading event details.</div>;
   }
 
   return (
@@ -46,7 +22,7 @@ export default function EventDetails() {
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">{event?.title}</h1>
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">{event.title}</h1>
             <p className="text-gray-600 mt-1">Event Details</p>
           </div>
           <NavigationButtons />
@@ -68,7 +44,7 @@ export default function EventDetails() {
                   Title
                 </dt>
                 <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                  {event?.title}
+                  {event.title}
                 </dd>
               </div>
               <div className="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
@@ -76,7 +52,7 @@ export default function EventDetails() {
                   Description
                 </dt>
                 <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                  {event?.description}
+                  {event.description}
                 </dd>
               </div>
               <div className="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
@@ -84,7 +60,7 @@ export default function EventDetails() {
                   Date
                 </dt>
                 <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                  {event?.date}
+                  {event.date}
                 </dd>
               </div>
               <div className="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
@@ -92,7 +68,31 @@ export default function EventDetails() {
                   Location
                 </dt>
                 <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                  {event?.location}
+                  {event.location}
+                </dd>
+              </div>
+              <div className="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                <dt className="text-sm font-medium text-gray-500">
+                  Type
+                </dt>
+                <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                  {event.type}
+                </dd>
+              </div>
+              <div className="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                <dt className="text-sm font-medium text-gray-500">
+                  Duration
+                </dt>
+                <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                  {event.duration}
+                </dd>
+              </div>
+              <div className="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                <dt className="text-sm font-medium text-gray-500">
+                  Participants
+                </dt>
+                <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                  {event.participants} / {event.maxParticipants}
                 </dd>
               </div>
             </dl>

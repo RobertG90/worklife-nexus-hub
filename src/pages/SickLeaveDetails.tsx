@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
@@ -81,14 +82,8 @@ export default function SickLeaveDetails() {
             </div>
             <div>
               <span className="font-medium">Reason:</span>
-              <p>{request.reason}</p>
+              <p>{request.reason || 'No reason provided.'}</p>
             </div>
-            {request.additional_notes && (
-              <div>
-                <span className="font-medium">Additional Notes:</span>
-                <p>{request.additional_notes}</p>
-              </div>
-            )}
           </CardContent>
         </Card>
       </div>

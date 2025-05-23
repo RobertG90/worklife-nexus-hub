@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
@@ -62,11 +63,11 @@ export default function TripBookingDetails() {
             </div>
             <div className="flex items-center space-x-2">
               <Clock className="w-4 h-4 text-gray-500" />
-              <span>Departure: {format(new Date(booking.departure_time), 'p')}, Return: {format(new Date(booking.return_time), 'p')}</span>
+              <span>Preferred Time: {booking.preferred_time}</span>
             </div>
             <div className="flex items-center space-x-2">
               <Users className="w-4 h-4 text-gray-500" />
-              <span>{booking.number_of_passengers} Passengers</span>
+              <span>Accommodation: {booking.accommodation}</span>
             </div>
             <div>
               <span className="block font-medium text-gray-700">Status:</span>
@@ -75,8 +76,8 @@ export default function TripBookingDetails() {
               </Badge>
             </div>
             <div>
-              <span className="block font-medium text-gray-700">Notes:</span>
-              <p className="text-gray-600">{booking.notes || 'No notes provided.'}</p>
+              <span className="block font-medium text-gray-700">Trip Type:</span>
+              <p className="text-gray-600">{booking.trip_type}</p>
             </div>
           </CardContent>
         </Card>

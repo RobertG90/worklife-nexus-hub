@@ -1,36 +1,20 @@
+
 import React from 'react';
 import { useParams } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
-import { Course } from '@/hooks/useCourses';
 import { NavigationButtons } from '@/components/NavigationButtons';
+import { useCourses } from '@/hooks/useCourses';
 
 export default function CourseDetails() {
-  const params = useParams();
-  const { data: course, isLoading, error } = useQuery({
-    queryKey: ['course', params.id],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('courses')
-        .select('*')
-        .eq('id', params.id)
-        .single();
-
-      if (error) {
-        throw error;
-      }
-
-      return data as Course;
-    },
-    enabled: !!params.id,
-  });
+  const { id } = useParams<{ id: string }>();
+  const { getCourseById, isLoading } = useCourses();
+  const course = id ? getCourseById(id) : undefined;
 
   if (isLoading) {
     return <div>Loading course details...</div>;
   }
 
-  if (error) {
-    return <div>Error loading course details: {error.message}</div>;
+  if (!course) {
+    return <div>Course not found or error loading course details.</div>;
   }
 
   return (
@@ -38,7 +22,7 @@ export default function CourseDetails() {
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">{course?.title}</h1>
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">{course.title}</h1>
             <p className="text-gray-600 mt-1">Course Details</p>
           </div>
           <NavigationButtons />
@@ -60,7 +44,7 @@ export default function CourseDetails() {
                   Title
                 </dt>
                 <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                  {course?.title}
+                  {course.title}
                 </dd>
               </div>
               <div className="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
@@ -68,7 +52,7 @@ export default function CourseDetails() {
                   Description
                 </dt>
                 <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                  {course?.description}
+                  {course.description}
                 </dd>
               </div>
               <div className="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
@@ -76,23 +60,47 @@ export default function CourseDetails() {
                   Instructor
                 </dt>
                 <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                  {course?.instructor}
+                  {course.instructor}
                 </dd>
               </div>
               <div className="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
                 <dt className="text-sm font-medium text-gray-500">
-                  Start Date
+                  Category
                 </dt>
                 <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                  {new Date(course?.start_date || '').toLocaleDateString()}
+                  {course.category}
                 </dd>
               </div>
               <div className="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
                 <dt className="text-sm font-medium text-gray-500">
-                  End Date
+                  Duration
                 </dt>
                 <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                  {new Date(course?.end_date || '').toLocaleDateString()}
+                  {course.duration}
+                </dd>
+              </div>
+              <div className="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                <dt className="text-sm font-medium text-gray-500">
+                  Level
+                </dt>
+                <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                  {course.level}
+                </dd>
+              </div>
+              <div className="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                <dt className="text-sm font-medium text-gray-500">
+                  Next Start
+                </dt>
+                <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                  {course.nextStart}
+                </dd>
+              </div>
+              <div className="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                <dt className="text-sm font-medium text-gray-500">
+                  Prerequisites
+                </dt>
+                <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                  {course.prerequisites}
                 </dd>
               </div>
             </dl>
