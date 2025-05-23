@@ -6,9 +6,11 @@ import { Card } from '@/components/ui/card';
 import { SickLeaveForm } from '@/components/forms/SickLeaveForm';
 import { useSickLeaveRequests } from '@/hooks/useSickLeaveRequests';
 import { format } from 'date-fns';
+import { useNavigate } from 'react-router-dom';
 
 export function SickLeaveSection() {
   const { requests, isLoading } = useSickLeaveRequests();
+  const navigate = useNavigate();
 
   const calculateDays = (startDate: string, endDate: string) => {
     const start = new Date(startDate);
@@ -24,6 +26,10 @@ export function SickLeaveSection() {
 
   const totalAllocation = 12;
   const remainingDays = totalAllocation - totalUsedDays;
+
+  const handleRowClick = (requestId: string) => {
+    navigate(`/sick-leave/${requestId}`);
+  };
 
   return (
     <div className="space-y-8">
@@ -109,7 +115,11 @@ export function SickLeaveSection() {
                 {requests.map((request) => {
                   const days = calculateDays(request.start_date, request.end_date);
                   return (
-                    <tr key={request.id} className="border-b border-gray-100">
+                    <tr 
+                      key={request.id} 
+                      className="border-b border-gray-100 hover:bg-gray-50 cursor-pointer transition-colors"
+                      onClick={() => handleRowClick(request.id)}
+                    >
                       <td className="py-3 px-4 text-gray-900">
                         {format(new Date(request.start_date), 'MMM dd')} - {format(new Date(request.end_date), 'MMM dd, yyyy')}
                       </td>
