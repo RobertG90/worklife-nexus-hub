@@ -1,26 +1,67 @@
-# Welcome to your Lovable project
+# WorkLife Nexus Hub
+
+A comprehensive workplace management system that helps employees manage their work-life balance through various automated processes and requests.
+
+## Features
+
+### 🎯 Dashboard Overview
+- Real-time statistics and metrics
+- Quick access to common actions
+- Recent activity tracking
+- System status monitoring
+- Automation rate tracking
+
+### 🏥 Sick Leave Management
+- Submit and track sick leave requests
+- Detailed view of leave requests including:
+  - Start and end dates
+  - Duration calculation
+  - Request status tracking
+  - Reason documentation
+  - Timeline of request updates
+- Multiple leave types support
+- Request editing for pending submissions
+
+### 🚗 Travel & Booking
+- Company car booking system
+- Trip scheduling and management
+- Upcoming bookings tracking
+
+### 💰 Expense Management
+- Receipt upload functionality
+- Monthly expense tracking
+- Quick reimbursement processing
+- Expense analytics
+
+### 📊 Analytics & Reporting
+- Monthly expense summaries
+- Pending requests overview
+- Approved items tracking
+- Upcoming bookings monitoring
 
 ## Project info
 
 **URL**: https://lovable.dev/projects/41e3839d-44f8-4058-b80d-7c90dd715c59
 
-## How can I edit this code?
+## Technologies Used
 
-There are several ways of editing your application.
+This project is built with modern web technologies:
 
-**Use Lovable**
+- **Vite** - Next Generation Frontend Tooling
+- **TypeScript** - For type-safe code
+- **React** - UI Framework
+- **shadcn-ui** - Beautifully designed components
+- **Tailwind CSS** - Utility-first CSS framework
+- **date-fns** - Modern JavaScript date utility library
+- **Lucide Icons** - Beautiful & consistent icons
+- **React Router** - For seamless navigation
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/41e3839d-44f8-4058-b80d-7c90dd715c59) and start prompting.
+## Getting Started
 
-Changes made via Lovable will be committed automatically to this repo.
+### Prerequisites
+- Node.js & npm - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
 
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
+### Installation
 
 ```sh
 # Step 1: Clone the repository using the project's Git URL.
@@ -36,38 +77,36 @@ npm i
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+## Alternative Development Methods
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+### Use Lovable
 
-**Use GitHub Codespaces**
+Simply visit the [Lovable Project](https://lovable.dev/projects/41e3839d-44f8-4058-b80d-7c90dd715c59) and start prompting.
+Changes made via Lovable will be committed automatically to this repo.
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+### Edit Directly in GitHub
 
-## What technologies are used for this project?
+1. Navigate to the desired file(s)
+2. Click the "Edit" button (pencil icon)
+3. Make your changes and commit
 
-This project is built with:
+### Use GitHub Codespaces
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+1. Navigate to the main repository page
+2. Click the "Code" button (green)
+3. Select "Codespaces"
+4. Click "New codespace"
+5. Edit files and commit changes
 
-## How can I deploy this project?
+## Deployment
 
 Simply open [Lovable](https://lovable.dev/projects/41e3839d-44f8-4058-b80d-7c90dd715c59) and click on Share -> Publish.
 
-## Can I connect a custom domain to my Lovable project?
+## Custom Domain Setup
 
-Yes, you can!
+To connect a custom domain:
+1. Navigate to Project > Settings > Domains
+2. Click Connect Domain
+3. Follow the setup instructions
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+For detailed instructions, visit: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
