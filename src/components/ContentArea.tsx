@@ -10,13 +10,14 @@ import { ExpenseSection } from './sections/ExpenseSection';
 
 interface ContentAreaProps {
   activeSection: string;
+  onSectionChange: (section: string) => void;
 }
 
-export function ContentArea({ activeSection }: ContentAreaProps) {
+export function ContentArea({ activeSection, onSectionChange }: ContentAreaProps) {
   const renderContent = () => {
     switch (activeSection) {
       case 'dashboard':
-        return <Dashboard />;
+        return <Dashboard onSectionChange={onSectionChange} />;
       case 'sick-leave':
         return <SickLeaveSection />;
       case 'education':
@@ -30,7 +31,7 @@ export function ContentArea({ activeSection }: ContentAreaProps) {
       case 'expenses':
         return <ExpenseSection />;
       default:
-        return <Dashboard />;
+        return <Dashboard onSectionChange={onSectionChange} />;
     }
   };
 

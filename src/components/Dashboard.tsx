@@ -11,19 +11,47 @@ import {
   DollarSign
 } from 'lucide-react';
 
-export function Dashboard() {
+interface DashboardProps {
+  onSectionChange: (section: string) => void;
+}
+
+export function Dashboard({ onSectionChange }: DashboardProps) {
   const recentActivities = [
-    { id: 1, type: 'sick-leave', title: 'Sick Leave Request', status: 'approved', date: '2 hours ago' },
-    { id: 2, type: 'expense', title: 'Business Lunch Receipt', status: 'pending', date: '1 day ago' },
-    { id: 3, type: 'booking', title: 'Conference Room A', status: 'confirmed', date: '2 days ago' },
-    { id: 4, type: 'travel', title: 'Flight to NYC', status: 'pending', date: '3 days ago' },
+    { id: 1, type: 'sick-leave', title: 'Sick Leave Request', status: 'approved', date: '2 hours ago', section: 'sick-leave' },
+    { id: 2, type: 'expense', title: 'Business Lunch Receipt', status: 'pending', date: '1 day ago', section: 'expenses' },
+    { id: 3, type: 'booking', title: 'Conference Room A', status: 'confirmed', date: '2 days ago', section: 'booking' },
+    { id: 4, type: 'travel', title: 'Flight to NYC', status: 'pending', date: '3 days ago', section: 'travel' },
   ];
 
   const quickStats = [
-    { label: 'Pending Requests', value: '3', icon: Clock, color: 'text-orange-600' },
-    { label: 'Approved Items', value: '12', icon: CheckCircle, color: 'text-green-600' },
-    { label: 'This Month Expenses', value: '$1,240', icon: DollarSign, color: 'text-blue-600' },
-    { label: 'Upcoming Bookings', value: '5', icon: Calendar, color: 'text-purple-600' },
+    { label: 'Pending Requests', value: '3', icon: Clock, color: 'text-orange-600', section: 'sick-leave' },
+    { label: 'Approved Items', value: '12', icon: CheckCircle, color: 'text-green-600', section: 'sick-leave' },
+    { label: 'This Month Expenses', value: '$1,240', icon: DollarSign, color: 'text-blue-600', section: 'expenses' },
+    { label: 'Upcoming Bookings', value: '5', icon: Calendar, color: 'text-purple-600', section: 'booking' },
+  ];
+
+  const quickActions = [
+    { 
+      emoji: '❤️', 
+      title: 'Submit Sick Leave', 
+      description: 'Quick sick day request',
+      section: 'sick-leave',
+      color: 'text-red-500'
+    },
+    { 
+      emoji: '📱', 
+      title: 'Book Company Car', 
+      description: 'Reserve for your trip',
+      section: 'booking',
+      color: 'text-blue-500'
+    },
+    { 
+      emoji: '🧾', 
+      title: 'Upload Receipt', 
+      description: 'Get reimbursed quickly',
+      section: 'expenses',
+      color: 'text-green-500'
+    },
   ];
 
   return (
@@ -51,7 +79,11 @@ export function Dashboard() {
         {quickStats.map((stat, index) => {
           const Icon = stat.icon;
           return (
-            <Card key={index} className="p-6 hover:shadow-lg transition-shadow">
+            <Card 
+              key={index} 
+              className="p-6 hover:shadow-lg transition-shadow cursor-pointer"
+              onClick={() => onSectionChange(stat.section)}
+            >
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-gray-600">{stat.label}</p>
@@ -69,7 +101,11 @@ export function Dashboard() {
         <h3 className="text-lg font-semibold text-gray-900 mb-6">Recent Activity</h3>
         <div className="space-y-4">
           {recentActivities.map((activity) => (
-            <div key={activity.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+            <div 
+              key={activity.id} 
+              className="flex items-center justify-between p-4 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100 transition-colors"
+              onClick={() => onSectionChange(activity.section)}
+            >
               <div className="flex items-center space-x-3">
                 <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
                 <div>
@@ -97,21 +133,17 @@ export function Dashboard() {
       <Card className="p-6">
         <h3 className="text-lg font-semibold text-gray-900 mb-6">Quick Actions</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <button className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 text-left transition-colors">
-            <div className="text-red-500 mb-2">❤️</div>
-            <p className="font-medium">Submit Sick Leave</p>
-            <p className="text-sm text-gray-500">Quick sick day request</p>
-          </button>
-          <button className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 text-left transition-colors">
-            <div className="text-blue-500 mb-2">📱</div>
-            <p className="font-medium">Book Company Car</p>
-            <p className="text-sm text-gray-500">Reserve for your trip</p>
-          </button>
-          <button className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 text-left transition-colors">
-            <div className="text-green-500 mb-2">🧾</div>
-            <p className="font-medium">Upload Receipt</p>
-            <p className="text-sm text-gray-500">Get reimbursed quickly</p>
-          </button>
+          {quickActions.map((action, index) => (
+            <button 
+              key={index}
+              className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 text-left transition-colors"
+              onClick={() => onSectionChange(action.section)}
+            >
+              <div className={`${action.color} mb-2`}>{action.emoji}</div>
+              <p className="font-medium">{action.title}</p>
+              <p className="text-sm text-gray-500">{action.description}</p>
+            </button>
+          ))}
         </div>
       </Card>
     </div>

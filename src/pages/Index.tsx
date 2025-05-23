@@ -11,7 +11,7 @@ const Index = () => {
     <ToastProvider>
       <div className="min-h-screen bg-gray-50 flex">
         <Sidebar activeSection={activeSection} onSectionChange={setActiveSection} />
-        <ContentArea activeSection={activeSection} />
+        <ContentArea activeSection={activeSection} onSectionChange={setActiveSection} />
       </div>
     </ToastProvider>
   );
