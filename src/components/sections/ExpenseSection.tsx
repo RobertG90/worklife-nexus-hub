@@ -1,241 +1,162 @@
 
-import React, { useState } from 'react';
-import { NavigationButtons } from '@/components/NavigationButtons';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { ReceiptUpload } from '@/components/ReceiptUpload';
+import React, { useEffect } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Plus, Receipt, Search, FileText, DollarSign } from 'lucide-react';
 import { ExpenseTable } from '@/components/tables/ExpenseTable';
-import { useExpenseForm } from '@/hooks/useExpenseForm';
-import { Search, Receipt, DollarSign, Calendar, FileText } from 'lucide-react';
+
+const sampleExpenses = [
+  {
+    id: 'exp-001',
+    description: 'Business lunch with client',
+    amount: 85.50,
+    date: '2024-01-15',
+    status: 'approved',
+    category: 'meals',
+    receiptFile: 'receipt-lunch-001.pdf',
+    created_at: '2024-01-15T12:00:00Z'
+  },
+  {
+    id: 'exp-002',
+    description: 'Office supplies - pens and notebooks',
+    amount: 42.30,
+    date: '2024-01-12',
+    status: 'pending',
+    category: 'office-supplies',
+    receiptFile: 'receipt-supplies-002.pdf',
+    created_at: '2024-01-12T14:30:00Z'
+  },
+  {
+    id: 'exp-003',
+    description: 'Taxi fare to airport',
+    amount: 65.00,
+    date: '2024-01-10',
+    status: 'approved',
+    category: 'transportation',
+    receiptFile: 'receipt-taxi-003.pdf',
+    created_at: '2024-01-10T08:15:00Z'
+  },
+  {
+    id: 'exp-004',
+    description: 'Hotel accommodation - conference',
+    amount: 250.00,
+    date: '2024-01-08',
+    status: 'approved',
+    category: 'accommodation',
+    receiptFile: 'receipt-hotel-004.pdf',
+    created_at: '2024-01-08T16:45:00Z'
+  },
+  {
+    id: 'exp-005',
+    description: 'Software subscription - monthly',
+    amount: 29.99,
+    date: '2024-01-05',
+    status: 'pending',
+    category: 'software',
+    receiptFile: 'receipt-software-005.pdf',
+    created_at: '2024-01-05T10:20:00Z'
+  },
+  {
+    id: 'exp-006',
+    description: 'Parking fees - downtown meeting',
+    amount: 15.00,
+    date: '2024-01-03',
+    status: 'rejected',
+    category: 'transportation',
+    receiptFile: 'receipt-parking-006.pdf',
+    created_at: '2024-01-03T11:30:00Z'
+  }
+];
 
 export function ExpenseSection() {
-  const [formData, setFormData] = useState({
-    category: 'meals',
-    amount: '',
-    date: '',
-    description: '',
-  });
-  const [searchTerm, setSearchTerm] = useState('');
-  
-  const { 
-    isSubmitting, 
-    uploadedFile, 
-    setUploadedFile, 
-    processReceiptFile, 
-    submitExpense 
-  } = useExpenseForm();
+  const [expenses, setExpenses] = React.useState([]);
+  const [searchTerm, setSearchTerm] = React.useState('');
 
-  // Get expenses from localStorage for demo
-  const expenses = JSON.parse(localStorage.getItem('expenses') || '[]');
-  const filteredExpenses = expenses.filter((expense: any) =>
+  useEffect(() => {
+    // Initialize expenses in localStorage if they don't exist
+    const storedExpenses = localStorage.getItem('expenses');
+    if (!storedExpenses) {
+      localStorage.setItem('expenses', JSON.stringify(sampleExpenses));
+      setExpenses(sampleExpenses);
+    } else {
+      setExpenses(JSON.parse(storedExpenses));
+    }
+  }, []);
+
+  const filteredExpenses = expenses.filter(expense =>
     expense.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
     expense.category.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!formData.amount || !formData.date || !formData.description) {
-      return;
-    }
-
-    await submitExpense({
-      category: formData.category,
-      amount: parseFloat(formData.amount),
-      date: formData.date,
-      description: formData.description,
-      receiptFile: uploadedFile || undefined,
-    });
-
-    // Reset form
-    setFormData({
-      category: 'meals',
-      amount: '',
-      date: '',
-      description: '',
-    });
-    setUploadedFile(null);
-  };
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    setFormData(prev => ({
-      ...prev,
-      [e.target.name]: e.target.value
-    }));
-  };
-
-  const handleFileSelect = async (file: File) => {
-    setUploadedFile(file);
-    try {
-      const extractedData = await processReceiptFile(file);
-      setFormData(prev => ({
-        ...prev,
-        amount: extractedData.amount?.toString() || prev.amount,
-        description: extractedData.description || prev.description,
-        date: extractedData.date || prev.date,
-      }));
-    } catch (error) {
-      console.error('Error processing receipt:', error);
-    }
-  };
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50">
-      <div className="max-w-7xl mx-auto p-6 space-y-6">
-        <div className="flex items-center justify-between">
-          <div className="space-y-2">
-            <div className="flex items-center space-x-3">
-              <div className="p-2 bg-blue-600 rounded-lg">
-                <Receipt className="w-6 h-6 text-white" />
-              </div>
-              <h1 className="text-3xl font-bold text-gray-900">Expense Reports</h1>
-            </div>
-            <p className="text-gray-600">Submit and track your expense reports with ease</p>
-          </div>
-          <NavigationButtons showBack={false} />
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900">Expense Reports</h1>
+          <p className="text-gray-600 mt-1">Submit and track your expense reports with ease</p>
         </div>
-        
-        <Tabs defaultValue="expenses" className="w-full">
-          <TabsList className="grid w-full grid-cols-2 mb-6">
-            <TabsTrigger value="expenses" className="flex items-center space-x-2">
-              <FileText className="w-4 h-4" />
-              <span>My Expenses</span>
-            </TabsTrigger>
-            <TabsTrigger value="new" className="flex items-center space-x-2">
-              <DollarSign className="w-4 h-4" />
-              <span>New Expense</span>
-            </TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="expenses" className="space-y-6">
-            <Card className="shadow-lg border-0">
-              <CardHeader className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-t-lg">
-                <CardTitle className="flex items-center space-x-2">
-                  <FileText className="w-5 h-5" />
-                  <span>Expense History</span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="p-6">
-                <div className="relative mb-6">
-                  <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                  <Input
-                    placeholder="Search expenses by description or category..."
-                    className="pl-10 border-gray-200 focus:border-blue-500 focus:ring-blue-500"
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                  />
-                </div>
-                <ExpenseTable expenses={filteredExpenses} />
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="new" className="space-y-6">
-            <Card className="shadow-lg border-0">
-              <CardHeader className="bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-t-lg">
-                <CardTitle className="flex items-center space-x-2">
-                  <DollarSign className="w-5 h-5" />
-                  <span>Submit New Expense</span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="p-6">
-                <form onSubmit={handleSubmit} className="space-y-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Category *
-                      </label>
-                      <select
-                        name="category"
-                        value={formData.category}
-                        onChange={handleChange}
-                        className="w-full p-3 border border-gray-300 rounded-lg focus:border-blue-500 focus:ring-blue-500"
-                        required
-                      >
-                        <option value="meals">Meals & Entertainment</option>
-                        <option value="travel">Travel</option>
-                        <option value="supplies">Office Supplies</option>
-                        <option value="transport">Transportation</option>
-                        <option value="accommodation">Accommodation</option>
-                        <option value="other">Other</option>
-                      </select>
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        <DollarSign className="w-4 h-4 inline mr-1" />
-                        Amount *
-                      </label>
-                      <Input
-                        type="number"
-                        name="amount"
-                        value={formData.amount}
-                        onChange={handleChange}
-                        placeholder="0.00"
-                        step="0.01"
-                        min="0"
-                        className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
-                        required
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      <Calendar className="w-4 h-4 inline mr-1" />
-                      Date *
-                    </label>
-                    <Input
-                      type="date"
-                      name="date"
-                      value={formData.date}
-                      onChange={handleChange}
-                      className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
-                      required
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Description *
-                    </label>
-                    <Textarea
-                      name="description"
-                      value={formData.description}
-                      onChange={handleChange}
-                      placeholder="Describe your expense..."
-                      className="h-24 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
-                      required
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Receipt Upload
-                    </label>
-                    <ReceiptUpload
-                      onFileSelect={handleFileSelect}
-                      onFileRemove={() => setUploadedFile(null)}
-                      selectedFile={uploadedFile}
-                      isProcessing={isSubmitting}
-                    />
-                  </div>
-
-                  <Button
-                    type="submit"
-                    disabled={isSubmitting}
-                    className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white py-3 rounded-lg font-medium"
-                  >
-                    {isSubmitting ? 'Submitting...' : 'Submit Expense Report'}
-                  </Button>
-                </form>
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
       </div>
+
+      {/* Action Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <Card className="cursor-pointer hover:shadow-lg transition-shadow">
+          <CardContent className="p-6">
+            <div className="flex items-center space-x-4">
+              <div className="bg-blue-100 p-3 rounded-lg">
+                <FileText className="w-6 h-6 text-blue-600" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-lg">My Expenses</h3>
+                <p className="text-gray-600 text-sm">View and manage your submitted expenses</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="cursor-pointer hover:shadow-lg transition-shadow">
+          <CardContent className="p-6">
+            <div className="flex items-center space-x-4">
+              <div className="bg-green-100 p-3 rounded-lg">
+                <DollarSign className="w-6 h-6 text-green-600" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-lg">New Expense</h3>
+                <p className="text-gray-600 text-sm">Submit a new expense report</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Expense History */}
+      <Card>
+        <CardHeader className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-t-lg">
+          <CardTitle className="flex items-center space-x-2">
+            <Receipt className="w-5 h-5" />
+            <span>Expense History</span>
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="p-6">
+          {/* Search */}
+          <div className="mb-6">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+              <Input
+                type="text"
+                placeholder="Search expenses by description or category..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10"
+              />
+            </div>
+          </div>
+
+          {/* Expense Table */}
+          <ExpenseTable expenses={filteredExpenses} />
+        </CardContent>
+      </Card>
     </div>
   );
 }
