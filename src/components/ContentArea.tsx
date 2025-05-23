@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Dashboard } from './Dashboard';
 import { SickLeaveSection } from './sections/SickLeaveSection';
@@ -17,13 +16,19 @@ interface ContentAreaProps {
 export function ContentArea({ activeSection, onSectionChange }: ContentAreaProps) {
   const navigate = useNavigate();
   const location = useLocation();
+  const isInitialMount = React.useRef(true);
 
-  // Update URL when section changes
+  // Update URL when section changes, but only after initial mount
   React.useEffect(() => {
-    if (location.pathname !== `/${activeSection}` && activeSection !== 'dashboard') {
-      navigate(`/${activeSection}`);
-    } else if (activeSection === 'dashboard' && location.pathname !== '/') {
-      navigate('/');
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      return;
+    }
+
+    const currentPath = location.pathname.substring(1) || 'dashboard';
+    if (currentPath !== activeSection) {
+      const newPath = activeSection === 'dashboard' ? '/' : `/${activeSection}`;
+      navigate(newPath, { replace: true });
     }
   }, [activeSection, navigate, location.pathname]);
 

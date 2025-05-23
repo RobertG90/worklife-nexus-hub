@@ -1,27 +1,28 @@
-
 import React, { useState, useEffect } from 'react';
 import { Sidebar } from '@/components/Sidebar';
 import { ContentArea } from '@/components/ContentArea';
 import { ToastProvider } from '@/components/ui/toast-provider';
 import { useLocation } from 'react-router-dom';
 
-const Index = () => {
-  const [activeSection, setActiveSection] = useState('dashboard');
-  const location = useLocation();
+const validSections = ['sick-leave', 'education', 'travel', 'maintenance', 'booking', 'expenses'];
 
-  // Sync the active section with the URL path
+const Index = () => {
+  const location = useLocation();
+  const path = location.pathname.substring(1);
+  
+  // Initialize state based on URL path
+  const [activeSection, setActiveSection] = useState(() => {
+    if (!path) return 'dashboard';
+    return validSections.includes(path) ? path : 'dashboard';
+  });
+
+  // Handle section changes from URL updates
   useEffect(() => {
-    const path = location.pathname.substring(1); // Remove leading slash
-    if (path) {
-      // Check if path is one of our valid sections
-      const validSections = ['sick-leave', 'education', 'travel', 'maintenance', 'booking', 'expenses'];
-      if (validSections.includes(path)) {
-        setActiveSection(path);
-      }
-    } else {
-      setActiveSection('dashboard');
+    const newSection = !path ? 'dashboard' : validSections.includes(path) ? path : activeSection;
+    if (newSection !== activeSection) {
+      setActiveSection(newSection);
     }
-  }, [location.pathname]);
+  }, [path]);
 
   return (
     <ToastProvider>
