@@ -48,7 +48,8 @@ export function Dashboard({ onSectionChange }: DashboardProps) {
       value: isStatsLoading ? '...' : String(stats?.upcomingBookings || 0), 
       icon: Calendar, 
       color: 'text-purple-600', 
-      section: 'travel' 
+      section: 'upcoming-trips',
+      isLink: true
     },
   ];
 
@@ -112,12 +113,14 @@ export function Dashboard({ onSectionChange }: DashboardProps) {
           const Icon = stat.icon;
           return (
             <Link 
-              to={`/${stat.section}`}
+              to={stat.isLink ? `/${stat.section}` : '#'}
               key={index} 
               className="block"
               onClick={(e) => {
-                e.preventDefault();
-                onSectionChange(stat.section);
+                if (!stat.isLink) {
+                  e.preventDefault();
+                  onSectionChange(stat.section);
+                }
               }}
             >
               <Card className="p-6 hover:shadow-lg transition-shadow cursor-pointer">
