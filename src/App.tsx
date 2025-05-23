@@ -9,8 +9,10 @@ import NotFound from "./pages/NotFound";
 import SickLeaveDetails from "./pages/SickLeaveDetails";
 import TripBookingDetails from "./pages/TripBookingDetails";
 import UpcomingTrips from "./pages/UpcomingTrips";
+import UpcomingTripsCalendar from "./pages/UpcomingTripsCalendar";
 import EventDetails from "./pages/EventDetails";
 import CourseDetails from "./pages/CourseDetails";
+import ExpenseDashboard from "./pages/ExpenseDashboard";
 
 const queryClient = new QueryClient();
 
@@ -26,6 +28,7 @@ const App = () => (
           <Route path="/sick-leave/:id" element={<SickLeaveDetails />} />
           <Route path="/trip-booking/:id" element={<TripBookingDetails />} />
           <Route path="/upcoming-trips" element={<UpcomingTrips />} />
+          <Route path="/upcoming-trips-calendar" element={<UpcomingTripsCalendar />} />
           <Route path="/event/:id" element={<EventDetails />} />
           <Route path="/course/:id" element={<CourseDetails />} />
           <Route path="/education" element={<Index />} />
@@ -33,6 +36,7 @@ const App = () => (
           <Route path="/maintenance" element={<Index />} />
           <Route path="/booking" element={<Index />} />
           <Route path="/expenses" element={<Index />} />
+          <Route path="/expense-dashboard" element={<ExpenseDashboard />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

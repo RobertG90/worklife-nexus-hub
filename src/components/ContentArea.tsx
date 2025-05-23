@@ -7,22 +7,31 @@ import { MaintenanceSection } from './sections/MaintenanceSection';
 import { BookingSection } from './sections/BookingSection';
 import { ExpenseSection } from './sections/ExpenseSection';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { Menu } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 interface ContentAreaProps {
   activeSection: string;
   onSectionChange: (section: string) => void;
+  onMenuToggle?: () => void;
 }
 
-export function ContentArea({ activeSection, onSectionChange }: ContentAreaProps) {
+export function ContentArea({ activeSection, onSectionChange, onMenuToggle }: ContentAreaProps) {
   const navigate = useNavigate();
   const location = useLocation();
+  const isInitialMount = React.useRef(true);
 
-  // Update URL when section changes
+  // Update URL when section changes, but only after initial mount
   React.useEffect(() => {
-    if (location.pathname !== `/${activeSection}` && activeSection !== 'dashboard') {
-      navigate(`/${activeSection}`);
-    } else if (activeSection === 'dashboard' && location.pathname !== '/') {
-      navigate('/');
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      return;
+    }
+
+    const currentPath = location.pathname.substring(1) || 'dashboard';
+    if (currentPath !== activeSection) {
+      const newPath = activeSection === 'dashboard' ? '/' : `/${activeSection}`;
+      navigate(newPath, { replace: true });
     }
   }, [activeSection, navigate, location.pathname]);
 
@@ -49,8 +58,24 @@ export function ContentArea({ activeSection, onSectionChange }: ContentAreaProps
 
   return (
     <div className="flex-1 bg-[#f8fafc] min-h-screen overflow-auto">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {renderContent()}
+      {/* Mobile header with menu button */}
+      <div className="md:hidden bg-white border-b border-gray-200 p-4 sticky top-0 z-10">
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={onMenuToggle}
+          className="flex items-center space-x-2"
+        >
+          <Menu className="w-5 h-5" />
+          <span>Menu</span>
+        </Button>
+      </div>
+      
+      {/* Main content */}
+      <div className="p-4 sm:p-6 lg:p-8">
+        <div className="max-w-7xl mx-auto">
+          {renderContent()}
+        </div>
       </div>
     </div>
   );
