@@ -21,8 +21,9 @@ export function useSickLeaveRequests() {
   const { data: requests, isLoading } = useQuery({
     queryKey: ['sick-leave-requests'],
     queryFn: async () => {
+      // Use type assertion to handle the table access
       const { data, error } = await supabase
-        .from('sick_leave_requests')
+        .from('sick_leave_requests' as any)
         .select('*')
         .order('created_at', { ascending: false });
       
@@ -42,7 +43,7 @@ export function useSickLeaveRequests() {
       if (!user) throw new Error('User not authenticated');
 
       const { data, error } = await supabase
-        .from('sick_leave_requests')
+        .from('sick_leave_requests' as any)
         .insert({
           start_date: requestData.startDate,
           end_date: requestData.endDate,
@@ -50,7 +51,7 @@ export function useSickLeaveRequests() {
           reason: requestData.reason,
           status: 'pending',
           user_id: user.id,
-        })
+        } as any)
         .select()
         .single();
 
