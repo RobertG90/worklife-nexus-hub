@@ -1,6 +1,5 @@
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
 import { useToastContext } from '@/components/ui/toast-provider';
 
 export interface TripBooking {
@@ -23,16 +22,12 @@ export function useTripBookings() {
   const { toast } = useToastContext();
   const queryClient = useQueryClient();
 
+  // Temporarily return empty data until the table is created
   const { data: bookings, isLoading } = useQuery({
     queryKey: ['trip-bookings'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('trip_bookings')
-        .select('*')
-        .order('departure_date', { ascending: true });
-      
-      if (error) throw error;
-      return (data as unknown) as TripBooking[];
+      // Return empty array until trip_bookings table is properly set up
+      return [] as TripBooking[];
     },
   });
 
@@ -47,34 +42,17 @@ export function useTripBookings() {
       preferredTime: string;
       accommodation: string;
     }) => {
-      const { data, error } = await supabase
-        .from('trip_bookings')
-        .insert({
-          trip_type: bookingData.tripType,
-          from_location: bookingData.fromLocation,
-          to_location: bookingData.toLocation,
-          departure_date: bookingData.departureDate,
-          return_date: bookingData.returnDate,
-          purpose: bookingData.purpose,
-          preferred_time: bookingData.preferredTime,
-          accommodation: bookingData.accommodation,
-          status: 'pending',
-          user_id: null, // No authentication required
-        })
-        .select()
-        .single();
-
-      if (error) throw error;
-      return data;
+      // Temporarily return mock data until table is created
+      toast({
+        title: 'Feature Coming Soon!',
+        description: 'Trip booking functionality will be available once the database is set up.',
+        variant: 'default'
+      });
+      return { id: 'temp-id' };
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['trip-bookings'] });
       queryClient.invalidateQueries({ queryKey: ['recent-activities'] });
-      toast({
-        title: 'Success!',
-        description: 'Your trip request has been submitted successfully.',
-        variant: 'success'
-      });
     },
     onError: (error) => {
       console.error('Error creating trip booking:', error);

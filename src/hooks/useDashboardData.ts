@@ -3,10 +3,9 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { SickLeaveRequest } from '@/hooks/useSickLeaveRequests';
 import { TravelExpense } from '@/hooks/useTravelExpenses';
-import { TripBooking } from '@/hooks/useTripBookings';
 
 export function useDashboardData() {
-  // Fetch recent activities from sick leave, travel expenses, and trip bookings
+  // Fetch recent activities from sick leave and travel expenses only
   const { data: recentActivities, isLoading: isActivitiesLoading } = useQuery({
     queryKey: ['recent-activities'],
     queryFn: async () => {
@@ -28,15 +27,6 @@ export function useDashboardData() {
       
       if (travelExpenseError) throw travelExpenseError;
       
-      // Fetch trip bookings
-      const { data: tripBookingData, error: tripBookingError } = await supabase
-        .from('trip_bookings')
-        .select('*')
-        .order('created_at', { ascending: false })
-        .limit(3);
-      
-      if (tripBookingError) throw tripBookingError;
-      
       // Transform sick leave data
       const sickLeaveActivities = (sickLeaveData || []).map((request: SickLeaveRequest) => ({
         id: request.id,
@@ -57,25 +47,13 @@ export function useDashboardData() {
         section: 'travel'
       }));
 
-      // Transform trip booking data
-      const tripBookingActivities = (tripBookingData || []).map((booking: TripBooking) => ({
-        id: booking.id,
-        type: 'trip-booking',
-        title: `Trip to ${booking.to_location} - ${booking.purpose}`,
-        status: booking.status,
-        date: formatRelativeTime(new Date(booking.created_at)),
-        section: 'travel'
-      }));
-
       // Combine and sort by date
-      const allActivities = [...sickLeaveActivities, ...travelExpenseActivities, ...tripBookingActivities];
+      const allActivities = [...sickLeaveActivities, ...travelExpenseActivities];
       allActivities.sort((a, b) => {
         const aData = sickLeaveData?.find(item => item.id === a.id) || 
-                     travelExpenseData?.find(item => item.id === a.id) ||
-                     tripBookingData?.find(item => item.id === a.id);
+                     travelExpenseData?.find(item => item.id === a.id);
         const bData = sickLeaveData?.find(item => item.id === b.id) || 
-                     travelExpenseData?.find(item => item.id === b.id) ||
-                     tripBookingData?.find(item => item.id === b.id);
+                     travelExpenseData?.find(item => item.id === b.id);
         return new Date(bData?.created_at || 0).getTime() - new Date(aData?.created_at || 0).getTime();
       });
 
@@ -110,14 +88,6 @@ export function useDashboardData() {
       
       if (travelExpensePendingError) throw travelExpensePendingError;
 
-      // Fetch trip booking stats
-      const { count: tripBookingPendingCount, error: tripBookingPendingError } = await supabase
-        .from('trip_bookings')
-        .select('*', { count: 'exact', head: true })
-        .eq('status', 'pending');
-      
-      if (tripBookingPendingError) throw tripBookingPendingError;
-
       // Calculate total expenses amount for this month
       const startOfMonth = new Date();
       startOfMonth.setDate(1);
@@ -133,19 +103,11 @@ export function useDashboardData() {
       // Sum up expenses (assuming USD for simplicity)
       const totalMonthlyExpenses = (thisMonthExpenses || []).reduce((sum, expense) => sum + expense.amount, 0);
 
-      // Count upcoming bookings (future departure dates)
-      const { count: upcomingBookingsCount, error: upcomingBookingsError } = await supabase
-        .from('trip_bookings')
-        .select('*', { count: 'exact', head: true })
-        .gte('departure_date', new Date().toISOString().split('T')[0]);
-      
-      if (upcomingBookingsError) throw upcomingBookingsError;
-
       return {
-        pendingRequests: (sickLeavePendingCount || 0) + (travelExpensePendingCount || 0) + (tripBookingPendingCount || 0),
+        pendingRequests: (sickLeavePendingCount || 0) + (travelExpensePendingCount || 0),
         approvedItems: sickLeaveApprovedCount || 0,
         monthlyExpenses: totalMonthlyExpenses,
-        upcomingBookings: upcomingBookingsCount || 0
+        upcomingBookings: 0 // Temporarily set to 0 until trip_bookings table is ready
       };
     }
   });
