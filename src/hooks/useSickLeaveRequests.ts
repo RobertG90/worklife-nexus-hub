@@ -11,6 +11,7 @@ export interface SickLeaveRequest {
   reason: string;
   status: string;
   created_at: string;
+  updated_at: string; // Add the updated_at field
   user_id: string | null;
 }
 
