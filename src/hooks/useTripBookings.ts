@@ -51,16 +51,13 @@ export function useTripBookings() {
       preferredTime: string;
       accommodation: string;
     }) => {
+      // Get user if authenticated, otherwise use null
       const { data: { user } } = await supabase.auth.getUser();
-      
-      if (!user) {
-        throw new Error('User must be logged in to create a booking');
-      }
 
       const { data, error } = await supabase
         .from('trip_bookings')
         .insert({
-          user_id: user.id,
+          user_id: user?.id || null,
           trip_type: bookingData.tripType,
           from_location: bookingData.fromLocation,
           to_location: bookingData.toLocation,
