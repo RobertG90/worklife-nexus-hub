@@ -28,7 +28,8 @@ export function useSickLeaveRequests() {
         .order('created_at', { ascending: false });
       
       if (error) throw error;
-      return data as SickLeaveRequest[];
+      // Add a double type assertion to safely convert the data
+      return (data as unknown) as SickLeaveRequest[];
     },
   });
 
