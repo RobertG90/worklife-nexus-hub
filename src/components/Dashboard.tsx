@@ -11,7 +11,7 @@ import {
   DollarSign
 } from 'lucide-react';
 import { useDashboardData } from '@/hooks/useDashboardData';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 interface DashboardProps {
   onSectionChange: (section: string) => void;
@@ -19,6 +19,7 @@ interface DashboardProps {
 
 export function Dashboard({ onSectionChange }: DashboardProps) {
   const { recentActivities, isActivitiesLoading, stats, isStatsLoading } = useDashboardData();
+  const navigate = useNavigate();
   
   // Define quick stats with real data where available
   const quickStats = [
@@ -75,6 +76,14 @@ export function Dashboard({ onSectionChange }: DashboardProps) {
       color: 'text-green-500'
     },
   ];
+
+  const handleActivityClick = (activity: any) => {
+    if (activity.type === 'sick-leave') {
+      navigate(`/sick-leave/${activity.id}`);
+    } else {
+      onSectionChange(activity.section);
+    }
+  };
 
   return (
     <div className="space-y-8">
@@ -134,35 +143,30 @@ export function Dashboard({ onSectionChange }: DashboardProps) {
         ) : (
           <div className="space-y-4">
             {recentActivities.map((activity: any) => (
-              <Link
-                to={`/${activity.section}`}
+              <div
                 key={activity.id}
-                onClick={(e) => {
-                  e.preventDefault();
-                  onSectionChange(activity.section);
-                }}
+                onClick={() => handleActivityClick(activity)}
+                className="flex items-center justify-between p-4 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100 transition-colors"
               >
-                <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100 transition-colors">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                    <div>
-                      <p className="font-medium text-gray-900">{activity.title}</p>
-                      <p className="text-sm text-gray-500">{activity.date}</p>
-                    </div>
+                <div className="flex items-center space-x-3">
+                  <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                  <div>
+                    <p className="font-medium text-gray-900">{activity.title}</p>
+                    <p className="text-sm text-gray-500">{activity.date}</p>
                   </div>
-                  <Badge 
-                    variant={activity.status === 'approved' ? 'default' : 
-                            activity.status === 'confirmed' ? 'default' : 'secondary'}
-                    className={
-                      activity.status === 'approved' ? 'bg-green-100 text-green-800' :
-                      activity.status === 'confirmed' ? 'bg-blue-100 text-blue-800' :
-                      'bg-orange-100 text-orange-800'
-                    }
-                  >
-                    {activity.status}
-                  </Badge>
                 </div>
-              </Link>
+                <Badge 
+                  variant={activity.status === 'approved' ? 'default' : 
+                          activity.status === 'confirmed' ? 'default' : 'secondary'}
+                  className={
+                    activity.status === 'approved' ? 'bg-green-100 text-green-800' :
+                    activity.status === 'confirmed' ? 'bg-blue-100 text-blue-800' :
+                    'bg-orange-100 text-orange-800'
+                  }
+                >
+                  {activity.status}
+                </Badge>
+              </div>
             ))}
           </div>
         )}
