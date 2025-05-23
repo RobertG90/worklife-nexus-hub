@@ -5,26 +5,108 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
-import { Receipt, Camera, DollarSign, Upload, Calendar, TrendingUp } from 'lucide-react';
+import { Receipt, DollarSign, Calendar, TrendingUp } from 'lucide-react';
+import { ReceiptUpload } from '@/components/ReceiptUpload';
+import { ExpenseDashboardWidget } from '@/components/ExpenseDashboardWidget';
+import { useExpenseForm } from '@/hooks/useExpenseForm';
+import { useToastContext } from '@/components/ui/toast-provider';
 
 export function ExpenseSection() {
+  const { toast } = useToastContext();
+  const { 
+    isSubmitting, 
+    uploadedFile, 
+    setUploadedFile, 
+    processReceiptFile, 
+    submitExpense 
+  } = useExpenseForm();
+  
   const [expenseCategory, setExpenseCategory] = useState('meals');
-
-  const recentExpenses = [
-    { id: 1, description: 'Client Lunch at Restaurant ABC', amount: 85.50, category: 'meals', date: '2024-01-20', status: 'approved' },
-    { id: 2, description: 'Taxi to Airport', amount: 45.00, category: 'transportation', date: '2024-01-18', status: 'pending' },
-    { id: 3, description: 'Office Supplies', amount: 120.75, category: 'office', date: '2024-01-15', status: 'approved' },
-    { id: 4, description: 'Hotel Stay - Business Trip', amount: 250.00, category: 'accommodation', date: '2024-01-12', status: 'approved' },
-  ];
+  const [amount, setAmount] = useState('');
+  const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
+  const [description, setDescription] = useState('');
+  const [isProcessingReceipt, setIsProcessingReceipt] = useState(false);
 
   const categories = [
     { id: 'meals', label: 'Meals & Entertainment', icon: '🍽️', limit: '$500/month' },
     { id: 'transportation', label: 'Transportation', icon: '🚗', limit: '$300/month' },
-    { id: 'accommodation', label: 'Accommodation', icon: '🏨', limit: '$200/night' },
+    { id: 'accommodation', label: 'Accommodation', icon: '🏨', limit: '$400/month' },
     { id: 'office', label: 'Office Supplies', icon: '📝', limit: '$150/month' },
-    { id: 'equipment', label: 'Equipment', icon: '💻', limit: 'Pre-approval required' },
-    { id: 'other', label: 'Other', icon: '📋', limit: 'Case by case' },
+    { id: 'equipment', label: 'Equipment', icon: '💻', limit: '$500/month' },
+    { id: 'other', label: 'Other', icon: '📋', limit: '$150/month' },
   ];
+
+  const handleFileSelect = async (file: File) => {
+    setUploadedFile(file);
+    setIsProcessingReceipt(true);
+    
+    try {
+      const extractedData = await processReceiptFile(file);
+      
+      // Auto-fill form with extracted data
+      if (extractedData.amount) setAmount(extractedData.amount.toString());
+      if (extractedData.description) setDescription(extractedData.description);
+      if (extractedData.date) setDate(extractedData.date);
+      
+      toast({
+        title: 'Receipt Processed!',
+        description: 'Data has been automatically extracted from your receipt.',
+        variant: 'success'
+      });
+    } catch (error) {
+      toast({
+        title: 'Processing Failed',
+        description: 'Could not extract data from receipt. Please fill manually.',
+        variant: 'destructive'
+      });
+    } finally {
+      setIsProcessingReceipt(false);
+    }
+  };
+
+  const handleFileRemove = () => {
+    setUploadedFile(null);
+    // Optionally clear auto-filled data
+    setAmount('');
+    setDescription('');
+    setDate(new Date().toISOString().split('T')[0]);
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!amount || !description) {
+      toast({
+        title: 'Missing Information',
+        description: 'Please fill in amount and description.',
+        variant: 'destructive'
+      });
+      return;
+    }
+
+    try {
+      await submitExpense({
+        category: expenseCategory,
+        amount: parseFloat(amount),
+        date,
+        description,
+        receiptFile: uploadedFile || undefined
+      });
+      
+      // Reset form
+      setAmount('');
+      setDescription('');
+      setDate(new Date().toISOString().split('T')[0]);
+      setUploadedFile(null);
+      setExpenseCategory('meals');
+      
+      // Trigger custom event to update dashboard
+      window.dispatchEvent(new CustomEvent('expenseAdded'));
+      
+    } catch (error) {
+      // Error is handled in the hook
+    }
+  };
 
   return (
     <div className="space-y-8">
@@ -39,204 +121,111 @@ export function ExpenseSection() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Submit New Expense */}
-        <div className="lg:col-span-2">
-          <Card className="p-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-6">Submit New Expense</h2>
-            
-            <div className="space-y-6">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-3">Expense Category</label>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  {categories.map((category) => (
-                    <button
-                      key={category.id}
-                      onClick={() => setExpenseCategory(category.id)}
-                      className={`p-3 rounded-lg border text-left transition-colors ${
-                        expenseCategory === category.id
-                          ? 'border-green-500 bg-green-50 text-green-700'
-                          : 'border-gray-200 hover:border-gray-300'
-                      }`}
-                    >
-                      <div className="flex items-center space-x-3">
-                        <span className="text-xl">{category.icon}</span>
-                        <div>
-                          <div className="font-medium text-gray-900">{category.label}</div>
-                          <div className="text-xs text-gray-500">{category.limit}</div>
-                        </div>
-                      </div>
-                    </button>
-                  ))}
-                </div>
-              </div>
+      {/* Dashboard */}
+      <ExpenseDashboardWidget />
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Amount</label>
-                  <div className="relative">
-                    <DollarSign className="absolute left-3 top-3 w-4 h-4 text-gray-400" />
-                    <Input type="number" placeholder="0.00" className="pl-10" step="0.01" />
+      {/* Submit New Expense */}
+      <Card className="p-6">
+        <h2 className="text-xl font-semibold text-gray-900 mb-6">Submit New Expense</h2>
+        
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-3">Expense Category</label>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              {categories.map((category) => (
+                <button
+                  key={category.id}
+                  type="button"
+                  onClick={() => setExpenseCategory(category.id)}
+                  className={`p-3 rounded-lg border text-left transition-colors ${
+                    expenseCategory === category.id
+                      ? 'border-green-500 bg-green-50 text-green-700'
+                      : 'border-gray-200 hover:border-gray-300'
+                  }`}
+                >
+                  <div className="flex items-center space-x-3">
+                    <span className="text-xl">{category.icon}</span>
+                    <div>
+                      <div className="font-medium text-gray-900">{category.label}</div>
+                      <div className="text-xs text-gray-500">{category.limit}</div>
+                    </div>
                   </div>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Date</label>
-                  <Input type="date" />
-                </div>
-              </div>
+                </button>
+              ))}
+            </div>
+          </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
-                <Textarea 
-                  placeholder="Brief description of the expense..."
-                  className="h-24"
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Receipt Upload</label>
+            <ReceiptUpload
+              onFileSelect={handleFileSelect}
+              onFileRemove={handleFileRemove}
+              selectedFile={uploadedFile}
+              isProcessing={isProcessingReceipt}
+            />
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Amount</label>
+              <div className="relative">
+                <DollarSign className="absolute left-3 top-3 w-4 h-4 text-gray-400" />
+                <Input 
+                  type="number" 
+                  placeholder="0.00" 
+                  className="pl-10" 
+                  step="0.01"
+                  value={amount}
+                  onChange={(e) => setAmount(e.target.value)}
+                  required
                 />
               </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Receipt Upload</label>
-                <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-gray-400 transition-colors cursor-pointer">
-                  <div className="flex flex-col items-center space-y-3">
-                    <div className="flex space-x-4">
-                      <div className="p-3 bg-blue-100 rounded-lg">
-                        <Camera className="w-6 h-6 text-blue-600" />
-                      </div>
-                      <div className="p-3 bg-green-100 rounded-lg">
-                        <Upload className="w-6 h-6 text-green-600" />
-                      </div>
-                    </div>
-                    <div>
-                      <p className="text-sm text-gray-600">Take a photo or upload receipt</p>
-                      <p className="text-xs text-gray-500 mt-1">PNG, JPG up to 10MB</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="bg-cyan-50 p-4 rounded-lg">
-                <div className="flex items-start space-x-3">
-                  <div className="text-cyan-500">🧠</div>
-                  <div>
-                    <h4 className="font-medium text-cyan-900">Smart Receipt Processing</h4>
-                    <p className="text-sm text-cyan-700 mt-1">
-                      Our AI will automatically extract amount, date, and vendor details from your receipt. 
-                      Just review and submit!
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <Button className="w-full bg-green-600 hover:bg-green-700">
-                Submit Expense Report
-              </Button>
             </div>
-          </Card>
-        </div>
-
-        {/* Sidebar */}
-        <div className="space-y-6">
-          {/* Monthly Summary */}
-          <Card className="p-6">
-            <h3 className="font-semibold text-gray-900 mb-4">This Month Summary</h3>
-            <div className="space-y-3">
-              <div className="flex justify-between items-center">
-                <span className="text-gray-600">Total Submitted</span>
-                <span className="font-semibold text-green-600">$501.25</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-gray-600">Approved</span>
-                <span className="text-gray-900">$456.25</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-gray-600">Pending</span>
-                <Badge className="bg-orange-100 text-orange-800">$45.00</Badge>
-              </div>
-              <div className="w-full bg-gray-200 rounded-full h-2 mt-3">
-                <div className="bg-green-600 h-2 rounded-full" style={{ width: '91%' }}></div>
-              </div>
-              <p className="text-xs text-gray-500 text-center">91% approved rate</p>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Date</label>
+              <Input 
+                type="date" 
+                value={date}
+                onChange={(e) => setDate(e.target.value)}
+                required
+              />
             </div>
-          </Card>
+          </div>
 
-          {/* Spending Limits */}
-          <Card className="p-6">
-            <h3 className="font-semibold text-gray-900 mb-4">Spending Limits</h3>
-            <div className="space-y-3 text-sm">
-              <div>
-                <div className="flex justify-between mb-1">
-                  <span className="text-gray-600">Meals</span>
-                  <span className="text-gray-900">$245 / $500</span>
-                </div>
-                <div className="w-full bg-gray-200 rounded-full h-2">
-                  <div className="bg-blue-600 h-2 rounded-full" style={{ width: '49%' }}></div>
-                </div>
-              </div>
-              <div>
-                <div className="flex justify-between mb-1">
-                  <span className="text-gray-600">Transportation</span>
-                  <span className="text-gray-900">$120 / $300</span>
-                </div>
-                <div className="w-full bg-gray-200 rounded-full h-2">
-                  <div className="bg-green-600 h-2 rounded-full" style={{ width: '40%' }}></div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
+            <Textarea 
+              placeholder="Brief description of the expense..."
+              className="h-24"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              required
+            />
+          </div>
+
+          {uploadedFile && (
+            <div className="bg-cyan-50 p-4 rounded-lg">
+              <div className="flex items-start space-x-3">
+                <div className="text-cyan-500">🧠</div>
+                <div>
+                  <h4 className="font-medium text-cyan-900">Smart Receipt Processing</h4>
+                  <p className="text-sm text-cyan-700 mt-1">
+                    Our AI automatically extracted information from your receipt. 
+                    Please review and modify if needed before submitting.
+                  </p>
                 </div>
               </div>
             </div>
-          </Card>
+          )}
 
-          {/* Quick Tips */}
-          <Card className="p-6">
-            <h3 className="font-semibold text-gray-900 mb-4">Quick Tips</h3>
-            <div className="space-y-3 text-sm text-gray-600">
-              <div className="flex items-start space-x-2">
-                <Receipt className="w-4 h-4 text-gray-400 mt-0.5 flex-shrink-0" />
-                <span>Always keep original receipts</span>
-              </div>
-              <div className="flex items-start space-x-2">
-                <Calendar className="w-4 h-4 text-gray-400 mt-0.5 flex-shrink-0" />
-                <span>Submit within 30 days</span>
-              </div>
-              <div className="flex items-start space-x-2">
-                <TrendingUp className="w-4 h-4 text-gray-400 mt-0.5 flex-shrink-0" />
-                <span>Business purpose required</span>
-              </div>
-            </div>
-          </Card>
-        </div>
-      </div>
-
-      {/* Recent Expenses */}
-      <Card className="p-6">
-        <h2 className="text-xl font-semibold text-gray-900 mb-6">Recent Expense Reports</h2>
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead>
-              <tr className="border-b border-gray-200">
-                <th className="text-left py-3 px-4 font-medium text-gray-700">Description</th>
-                <th className="text-left py-3 px-4 font-medium text-gray-700">Amount</th>
-                <th className="text-left py-3 px-4 font-medium text-gray-700">Category</th>
-                <th className="text-left py-3 px-4 font-medium text-gray-700">Date</th>
-                <th className="text-left py-3 px-4 font-medium text-gray-700">Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {recentExpenses.map((expense) => (
-                <tr key={expense.id} className="border-b border-gray-100">
-                  <td className="py-3 px-4 text-gray-900">{expense.description}</td>
-                  <td className="py-3 px-4 text-gray-900 font-medium">${expense.amount.toFixed(2)}</td>
-                  <td className="py-3 px-4 text-gray-600 capitalize">{expense.category}</td>
-                  <td className="py-3 px-4 text-gray-600">{expense.date}</td>
-                  <td className="py-3 px-4">
-                    <Badge 
-                      className={expense.status === 'approved' ? 'bg-green-100 text-green-800' : 'bg-orange-100 text-orange-800'}
-                    >
-                      {expense.status}
-                    </Badge>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+          <Button 
+            type="submit"
+            className="w-full bg-green-600 hover:bg-green-700"
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? 'Submitting...' : 'Submit Expense Report'}
+          </Button>
+        </form>
       </Card>
     </div>
   );
