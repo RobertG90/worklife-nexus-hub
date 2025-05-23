@@ -9,6 +9,7 @@ import NotFound from "./pages/NotFound";
 import SickLeaveDetails from "./pages/SickLeaveDetails";
 import TripBookingDetails from "./pages/TripBookingDetails";
 import UpcomingTrips from "./pages/UpcomingTrips";
+import EventDetails from "./pages/EventDetails";
 
 const queryClient = new QueryClient();
 
@@ -24,6 +25,7 @@ const App = () => (
           <Route path="/sick-leave/:id" element={<SickLeaveDetails />} />
           <Route path="/trip-booking/:id" element={<TripBookingDetails />} />
           <Route path="/upcoming-trips" element={<UpcomingTrips />} />
+          <Route path="/event/:id" element={<EventDetails />} />
           <Route path="/education" element={<Index />} />
           <Route path="/travel" element={<Index />} />
           <Route path="/maintenance" element={<Index />} />

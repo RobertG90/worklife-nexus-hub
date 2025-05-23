@@ -5,9 +5,11 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { GraduationCap, Users, Calendar, Star, Search } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 export function EducationSection() {
   const [filter, setFilter] = useState('all');
+  const navigate = useNavigate();
 
   const courses = [
     { id: 1, title: 'Advanced React Development', category: 'Technical', duration: '6 weeks', rating: 4.8, enrolled: 45, nextStart: '2024-02-01' },
@@ -20,6 +22,10 @@ export function EducationSection() {
     { id: 2, title: 'Tech Talk: AI in Practice', date: '2024-01-30', participants: 25, type: 'Learning' },
     { id: 3, title: 'Company Bowling Night', date: '2024-02-05', participants: 18, type: 'Social' },
   ];
+
+  const handleEventClick = (eventId: number) => {
+    navigate(`/event/${eventId}`);
+  };
 
   return (
     <div className="space-y-8">
@@ -98,16 +104,29 @@ export function EducationSection() {
             <h2 className="text-xl font-semibold text-gray-900 mb-6">Upcoming Social Events</h2>
             <div className="space-y-4">
               {events.map((event) => (
-                <div key={event.id} className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+                <div 
+                  key={event.id} 
+                  className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer"
+                  onClick={() => handleEventClick(event.id)}
+                >
                   <div className="flex justify-between items-start">
-                    <div>
-                      <h3 className="font-semibold text-gray-900">{event.title}</h3>
+                    <div className="flex-1">
+                      <h3 className="font-semibold text-gray-900 hover:text-blue-600 transition-colors">{event.title}</h3>
                       <p className="text-sm text-gray-600 mt-1">{event.date}</p>
                       <p className="text-sm text-gray-500">{event.participants} participants</p>
                     </div>
                     <div className="text-right">
                       <Badge variant="outline">{event.type}</Badge>
-                      <Button size="sm" className="mt-2 w-full">Join Event</Button>
+                      <Button 
+                        size="sm" 
+                        className="mt-2 w-full"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleEventClick(event.id);
+                        }}
+                      >
+                        View Details
+                      </Button>
                     </div>
                   </div>
                 </div>
