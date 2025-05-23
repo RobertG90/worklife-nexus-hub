@@ -17,16 +17,57 @@ import {
 } from 'lucide-react';
 import { TravelExpenseForm } from '@/components/forms/TravelExpenseForm';
 import { useTravelExpenses } from '@/hooks/useTravelExpenses';
+import { useTripBookings } from '@/hooks/useTripBookings';
 
 export function TravelSection() {
   const [tripType, setTripType] = useState('domestic');
   const [activeTab, setActiveTab] = useState('book-trip');
   const { expenses, isLoading } = useTravelExpenses();
+  const { bookings, isLoading: isBookingsLoading, createBooking, isCreating } = useTripBookings();
 
-  const upcomingTrips = [
-    { id: 1, destination: 'New York', date: '2024-02-15', status: 'confirmed', purpose: 'Client Meeting' },
-    { id: 2, destination: 'London', date: '2024-03-10', status: 'pending', purpose: 'Conference' },
-  ];
+  // Form state for trip booking
+  const [formData, setFormData] = useState({
+    fromLocation: '',
+    toLocation: '',
+    departureDate: '',
+    returnDate: '',
+    purpose: '',
+    preferredTime: 'Morning (6AM - 12PM)',
+    accommodation: 'Hotel required'
+  });
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleSubmitTrip = (e: React.FormEvent) => {
+    e.preventDefault();
+    createBooking({
+      tripType,
+      fromLocation: formData.fromLocation,
+      toLocation: formData.toLocation,
+      departureDate: formData.departureDate,
+      returnDate: formData.returnDate,
+      purpose: formData.purpose,
+      preferredTime: formData.preferredTime,
+      accommodation: formData.accommodation
+    });
+    
+    // Reset form after submission
+    setFormData({
+      fromLocation: '',
+      toLocation: '',
+      departureDate: '',
+      returnDate: '',
+      purpose: '',
+      preferredTime: 'Morning (6AM - 12PM)',
+      accommodation: 'Hotel required'
+    });
+  };
 
   const formatCurrency = (amount: number, currency: string) => {
     return new Intl.NumberFormat('en-US', {
@@ -38,6 +79,7 @@ export function TravelSection() {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'approved':
+      case 'confirmed':
         return 'bg-green-100 text-green-800';
       case 'rejected':
         return 'bg-red-100 text-red-800';
@@ -94,13 +136,14 @@ export function TravelSection() {
             <Card className="p-6">
               <h2 className="text-xl font-semibold text-gray-900 mb-6">Request New Business Trip</h2>
               
-              <div className="space-y-6">
+              <form onSubmit={handleSubmitTrip} className="space-y-6">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">Trip Type</label>
                   <div className="grid grid-cols-2 gap-3">
                     {['domestic', 'international'].map((type) => (
                       <button
                         key={type}
+                        type="button"
                         onClick={() => setTripType(type)}
                         className={`p-3 rounded-lg border text-center capitalize transition-colors ${
                           tripType === type
@@ -117,34 +160,70 @@ export function TravelSection() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">From</label>
-                    <Input placeholder="Departure city" />
+                    <Input 
+                      name="fromLocation"
+                      value={formData.fromLocation}
+                      onChange={handleInputChange}
+                      placeholder="Departure city" 
+                      required
+                    />
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">To</label>
-                    <Input placeholder="Destination city" />
+                    <Input 
+                      name="toLocation"
+                      value={formData.toLocation}
+                      onChange={handleInputChange}
+                      placeholder="Destination city" 
+                      required
+                    />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">Departure Date</label>
-                    <Input type="date" />
+                    <Input 
+                      type="date" 
+                      name="departureDate"
+                      value={formData.departureDate}
+                      onChange={handleInputChange}
+                      required
+                    />
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">Return Date</label>
-                    <Input type="date" />
+                    <Input 
+                      type="date" 
+                      name="returnDate"
+                      value={formData.returnDate}
+                      onChange={handleInputChange}
+                      required
+                    />
                   </div>
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">Purpose of Travel</label>
-                  <Textarea placeholder="Meeting details, conference name, etc." className="h-24" />
+                  <Textarea 
+                    name="purpose"
+                    value={formData.purpose}
+                    onChange={handleInputChange}
+                    placeholder="Meeting details, conference name, etc." 
+                    className="h-24" 
+                    required
+                  />
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">Preferred Departure Time</label>
-                    <select className="w-full p-2 border border-gray-300 rounded-md">
+                    <select 
+                      name="preferredTime"
+                      value={formData.preferredTime}
+                      onChange={handleInputChange}
+                      className="w-full p-2 border border-gray-300 rounded-md"
+                    >
                       <option>Morning (6AM - 12PM)</option>
                       <option>Afternoon (12PM - 6PM)</option>
                       <option>Evening (6PM - 12AM)</option>
@@ -153,7 +232,12 @@ export function TravelSection() {
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">Accommodation</label>
-                    <select className="w-full p-2 border border-gray-300 rounded-md">
+                    <select 
+                      name="accommodation"
+                      value={formData.accommodation}
+                      onChange={handleInputChange}
+                      className="w-full p-2 border border-gray-300 rounded-md"
+                    >
                       <option>Hotel required</option>
                       <option>No accommodation needed</option>
                       <option>Extended stay</option>
@@ -174,16 +258,19 @@ export function TravelSection() {
                   </div>
                 </div>
 
-                <Button className="w-full bg-blue-600 hover:bg-blue-700">
-                  Submit Travel Request
+                <Button 
+                  type="submit" 
+                  className="w-full bg-blue-600 hover:bg-blue-700"
+                  disabled={isCreating}
+                >
+                  {isCreating ? 'Submitting...' : 'Submit Travel Request'}
                 </Button>
-              </div>
+              </form>
             </Card>
           </div>
 
-          {/* Sidebar */}
+          {/* Sidebar - same as before */}
           <div className="space-y-6">
-            {/* Travel Policy */}
             <Card className="p-6">
               <h3 className="font-semibold text-gray-900 mb-4">Travel Guidelines</h3>
               <div className="space-y-3 text-sm text-gray-600">
@@ -202,7 +289,6 @@ export function TravelSection() {
               </div>
             </Card>
 
-            {/* Budget Tracker */}
             <Card className="p-6">
               <h3 className="font-semibold text-gray-900 mb-4">Travel Budget</h3>
               <div className="space-y-3">
@@ -229,12 +315,9 @@ export function TravelSection() {
 
       {activeTab === 'expenses' && (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Expense Form */}
           <div className="lg:col-span-2">
             <TravelExpenseForm />
           </div>
-
-          {/* Quick Stats */}
           <div className="space-y-6">
             <Card className="p-6">
               <h3 className="font-semibold text-gray-900 mb-4">Expense Summary</h3>
@@ -261,7 +344,6 @@ export function TravelSection() {
         </div>
       )}
 
-      {/* Expense Table */}
       {activeTab === 'expenses' && (
         <Card className="p-6">
           <h2 className="text-xl font-semibold text-gray-900 mb-6">Travel Expenses</h2>
@@ -308,42 +390,54 @@ export function TravelSection() {
         </Card>
       )}
 
-      {/* Upcoming Trips - only show on book-trip tab */}
+      {/* Upcoming Trips */}
       {activeTab === 'book-trip' && (
         <Card className="p-6">
           <h2 className="text-xl font-semibold text-gray-900 mb-6">Upcoming Trips</h2>
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b border-gray-200">
-                  <th className="text-left py-3 px-4 font-medium text-gray-700">Destination</th>
-                  <th className="text-left py-3 px-4 font-medium text-gray-700">Date</th>
-                  <th className="text-left py-3 px-4 font-medium text-gray-700">Purpose</th>
-                  <th className="text-left py-3 px-4 font-medium text-gray-700">Status</th>
-                  <th className="text-left py-3 px-4 font-medium text-gray-700">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {upcomingTrips.map((trip) => (
-                  <tr key={trip.id} className="border-b border-gray-100">
-                    <td className="py-3 px-4 text-gray-900">{trip.destination}</td>
-                    <td className="py-3 px-4 text-gray-600">{trip.date}</td>
-                    <td className="py-3 px-4 text-gray-600">{trip.purpose}</td>
-                    <td className="py-3 px-4">
-                      <Badge 
-                        className={trip.status === 'confirmed' ? 'bg-green-100 text-green-800' : 'bg-orange-100 text-orange-800'}
-                      >
-                        {trip.status}
-                      </Badge>
-                    </td>
-                    <td className="py-3 px-4">
-                      <Button size="sm" variant="outline">View Details</Button>
-                    </td>
+          {isBookingsLoading ? (
+            <div className="text-center py-8 text-gray-500">Loading trips...</div>
+          ) : bookings.length === 0 ? (
+            <div className="text-center py-8 text-gray-500">No upcoming trips found. Book your first trip!</div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-gray-200">
+                    <th className="text-left py-3 px-4 font-medium text-gray-700">Destination</th>
+                    <th className="text-left py-3 px-4 font-medium text-gray-700">From</th>
+                    <th className="text-left py-3 px-4 font-medium text-gray-700">Departure</th>
+                    <th className="text-left py-3 px-4 font-medium text-gray-700">Return</th>
+                    <th className="text-left py-3 px-4 font-medium text-gray-700">Purpose</th>
+                    <th className="text-left py-3 px-4 font-medium text-gray-700">Status</th>
+                    <th className="text-left py-3 px-4 font-medium text-gray-700">Actions</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody>
+                  {bookings.map((booking) => (
+                    <tr key={booking.id} className="border-b border-gray-100">
+                      <td className="py-3 px-4 text-gray-900">{booking.to_location}</td>
+                      <td className="py-3 px-4 text-gray-600">{booking.from_location}</td>
+                      <td className="py-3 px-4 text-gray-600">
+                        {new Date(booking.departure_date).toLocaleDateString()}
+                      </td>
+                      <td className="py-3 px-4 text-gray-600">
+                        {new Date(booking.return_date).toLocaleDateString()}
+                      </td>
+                      <td className="py-3 px-4 text-gray-600">{booking.purpose}</td>
+                      <td className="py-3 px-4">
+                        <Badge className={getStatusColor(booking.status)}>
+                          {booking.status}
+                        </Badge>
+                      </td>
+                      <td className="py-3 px-4">
+                        <Button size="sm" variant="outline">View Details</Button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </Card>
       )}
     </div>

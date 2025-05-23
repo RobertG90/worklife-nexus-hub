@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -45,11 +44,11 @@ export function Dashboard({ onSectionChange }: DashboardProps) {
       section: 'travel' 
     },
     { 
-      label: 'Upcoming Bookings', 
-      value: '0', // No bookings data in database yet
+      label: 'Upcoming Trips', 
+      value: isStatsLoading ? '...' : String(stats?.upcomingBookings || 0), 
       icon: Calendar, 
       color: 'text-purple-600', 
-      section: 'booking' 
+      section: 'travel' 
     },
   ];
 
