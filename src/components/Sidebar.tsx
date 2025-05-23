@@ -1,5 +1,5 @@
 
-import React, { ReactNode } from 'react';
+import React, { ReactNode, useState } from 'react';
 import { 
   Heart, 
   GraduationCap, 
@@ -12,7 +12,9 @@ import {
   Bell,
   LogOut,
   X,
-  Calendar
+  Calendar,
+  Moon,
+  Palette
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -37,16 +39,22 @@ const menuItems = [
 
 export function Sidebar({ activeSection, onSectionChange, onClose, errorBoundaryTestComponent }: SidebarProps) {
   const navigate = useNavigate();
+  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [isRainbowMode, setIsRainbowMode] = useState(false);
   
   // Error boundary test component
   if (errorBoundaryTestComponent) {
     return <div>Something went wrong</div>;
   }
 
-  const handleProfileClick = () => {
-    onSectionChange('profile');
-    if (onClose) onClose();
-    navigate('/profile');
+  const toggleDarkMode = () => {
+    setIsDarkMode(!isDarkMode);
+    document.documentElement.classList.toggle('dark');
+  };
+
+  const toggleRainbowMode = () => {
+    setIsRainbowMode(!isRainbowMode);
+    document.body.classList.toggle('rainbow-mode');
   };
 
   return (
@@ -59,14 +67,32 @@ export function Sidebar({ activeSection, onSectionChange, onClose, errorBoundary
               <img src="/logo.svg" alt="Logo" className="w-5 h-5" />
             </div>
             <div>
-              <div className="flex items-center">
-                <button 
-                  onClick={handleProfileClick}
-                  className="font-bold text-base hover:text-blue-200 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-opacity-50 rounded-sm"
-                  aria-label="View profile"
-                >
-                  John Doe
-                </button>
+              <div className="flex items-center space-x-2">
+                <span className="font-bold text-base">John Doe</span>
+                <div className="flex items-center space-x-1">
+                  <button
+                    onClick={toggleDarkMode}
+                    className={cn(
+                      "w-6 h-6 rounded-full flex items-center justify-center transition-colors",
+                      isDarkMode ? "bg-yellow-400 text-gray-900" : "bg-gray-700 text-white"
+                    )}
+                    aria-label="Toggle dark mode"
+                  >
+                    <Moon className="w-3 h-3" />
+                  </button>
+                  <button
+                    onClick={toggleRainbowMode}
+                    className={cn(
+                      "w-6 h-6 rounded-full flex items-center justify-center transition-colors",
+                      isRainbowMode 
+                        ? "bg-gradient-to-r from-red-500 via-yellow-500 to-blue-500" 
+                        : "bg-gray-700 text-white"
+                    )}
+                    aria-label="Toggle rainbow mode"
+                  >
+                    <Palette className="w-3 h-3" />
+                  </button>
+                </div>
                 {onClose && (
                   <button 
                     onClick={onClose}
