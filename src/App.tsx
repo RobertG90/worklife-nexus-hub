@@ -13,6 +13,7 @@ import UpcomingTripsCalendar from "./pages/UpcomingTripsCalendar";
 import EventDetails from "./pages/EventDetails";
 import CourseDetails from "./pages/CourseDetails";
 import ExpenseDashboard from "./pages/ExpenseDashboard";
+import ExpenseDetails from "./pages/ExpenseDetails";
 
 const queryClient = new QueryClient();
 
@@ -38,6 +39,7 @@ const App = () => (
           <Route path="/expenses" element={<Index />} />
           <Route path="/profile" element={<Index />} />
           <Route path="/expense-dashboard" element={<ExpenseDashboard />} />
+          <Route path="/expense/:id" element={<ExpenseDetails />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

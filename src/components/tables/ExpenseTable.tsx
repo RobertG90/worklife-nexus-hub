@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 
@@ -17,6 +18,12 @@ interface ExpenseTableProps {
 }
 
 export function ExpenseTable({ expenses }: ExpenseTableProps) {
+  const navigate = useNavigate();
+
+  const handleRowClick = (expenseId: string) => {
+    navigate(`/expense/${expenseId}`);
+  };
+
   if (expenses.length === 0) {
     return (
       <div className="text-center py-6 text-gray-500">
@@ -38,7 +45,11 @@ export function ExpenseTable({ expenses }: ExpenseTableProps) {
       </TableHeader>
       <TableBody>
         {expenses.map((expense) => (
-          <TableRow key={expense.id}>
+          <TableRow 
+            key={expense.id}
+            onClick={() => handleRowClick(expense.id)}
+            className="cursor-pointer hover:bg-gray-50 transition-colors"
+          >
             <TableCell className="font-medium">{expense.description}</TableCell>
             <TableCell>${expense.amount.toFixed(2)}</TableCell>
             <TableCell>{new Date(expense.date).toLocaleDateString()}</TableCell>
