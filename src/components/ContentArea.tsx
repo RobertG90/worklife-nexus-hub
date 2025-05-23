@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Dashboard } from './Dashboard';
 import { SickLeaveSection } from './sections/SickLeaveSection';
@@ -57,9 +58,9 @@ export function ContentArea({ activeSection, onSectionChange, onMenuToggle }: Co
   };
 
   return (
-    <div className="flex-1 bg-[#f8fafc] min-h-screen overflow-auto">
+    <div className="flex-1 bg-[#f8fafc] min-h-screen">
       {/* Mobile header with menu button */}
-      <div className="md:hidden bg-white border-b border-gray-200 p-4 sticky top-0 z-10">
+      <div className="md:hidden bg-white border-b border-gray-200 p-3 sticky top-0 z-10">
         <Button
           variant="ghost"
           size="sm"
@@ -72,10 +73,8 @@ export function ContentArea({ activeSection, onSectionChange, onMenuToggle }: Co
       </div>
       
       {/* Main content */}
-      <div className="p-4 sm:p-6 lg:p-8">
-        <div className="max-w-7xl mx-auto">
-          {renderContent()}
-        </div>
+      <div className="p-3 sm:p-5">
+        {renderContent()}
       </div>
     </div>
   );

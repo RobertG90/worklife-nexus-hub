@@ -33,18 +33,19 @@ const Index = () => {
 
   return (
     <ToastProvider>
-      <div className="min-h-screen bg-gray-50 flex relative">
+      <div className="h-screen w-full overflow-hidden flex">
         {/* Mobile overlay */}
         {sidebarOpen && (
           <div 
             className="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden"
             onClick={() => setSidebarOpen(false)}
+            aria-hidden="true"
           />
         )}
         
         {/* Sidebar */}
         <div className={`
-          fixed md:static inset-y-0 left-0 z-50 transform transition-transform duration-300 ease-in-out md:transform-none
+          fixed md:relative inset-y-0 left-0 z-50 transform transition-transform duration-300 ease-in-out md:transform-none w-64
           ${sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
         `}>
           <Sidebar 
@@ -55,7 +56,7 @@ const Index = () => {
         </div>
 
         {/* Main content */}
-        <div className="flex-1 w-full md:w-auto md:ml-0">
+        <div className="flex-1 w-full overflow-y-auto">
           <ContentArea 
             activeSection={activeSection} 
             onSectionChange={handleSectionChange}
