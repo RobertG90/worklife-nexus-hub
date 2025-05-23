@@ -39,6 +39,49 @@ A comprehensive workplace management system that helps employees manage their wo
 - Approved items tracking
 - Upcoming bookings monitoring
 
+## Testing
+
+### 🧪 Test Setup
+- **Vitest** - Test runner with Jest-like API
+- **React Testing Library** - Component testing utilities
+- **MSW (Mock Service Worker)** - API mocking
+- **@testing-library/jest-dom** - Custom DOM element matchers
+
+### Test Suites
+
+#### Dashboard Tests
+- Welcome message rendering
+- Quick stats display (pending requests, approved items)
+- Recent activities list
+- Quick actions functionality
+- System status indicators (automation rate, system status)
+
+#### Sick Leave Details Tests
+- Loading state handling
+- Error state for non-existent requests
+- Successful data display
+- Timeline information
+- Edit functionality for pending requests
+
+### Running Tests
+
+```sh
+# Run all tests
+npm test
+
+# Run tests in watch mode
+npm test -- --watch
+
+# Run tests with coverage
+npm test -- --coverage
+```
+
+### Test Utils
+- Custom render function with React Router and React Query setup
+- Supabase client mocking
+- MSW handlers for API request interception
+- Common test data fixtures
+
 ## Project info
 
 **URL**: https://lovable.dev/projects/41e3839d-44f8-4058-b80d-7c90dd715c59
@@ -47,6 +90,7 @@ A comprehensive workplace management system that helps employees manage their wo
 
 This project is built with modern web technologies:
 
+### Core Technologies
 - **Vite** - Next Generation Frontend Tooling
 - **TypeScript** - For type-safe code
 - **React** - UI Framework
@@ -55,6 +99,23 @@ This project is built with modern web technologies:
 - **date-fns** - Modern JavaScript date utility library
 - **Lucide Icons** - Beautiful & consistent icons
 - **React Router** - For seamless navigation
+- **React Query** - Powerful data synchronization
+- **Supabase** - Backend and database management
+- **Zod** - Schema validation
+
+### Testing Tools
+- **Vitest** - Modern testing framework
+- **React Testing Library** - Component testing
+- **MSW** - API mocking
+- **@testing-library/user-event** - User interaction simulation
+- **@testing-library/jest-dom** - DOM matchers
+
+### Development Tools
+- **ESLint** - Code linting
+- **TypeScript ESLint** - TypeScript-specific linting
+- **SWC** - Fast JavaScript/TypeScript compiler
+- **PostCSS** - CSS processing
+- **Autoprefixer** - Vendor prefix management
 
 ## Getting Started
 
@@ -75,6 +136,37 @@ npm i
 
 # Step 4: Start the development server with auto-reloading and an instant preview.
 npm run dev
+```
+
+### Available Scripts
+
+```sh
+# Start development server
+npm run dev
+
+# Build for production
+npm run build
+
+# Build for development
+npm run build:dev
+
+# Run tests
+npm test
+
+# Run tests with UI
+npm run test:ui
+
+# Run tests with coverage
+npm run test:coverage
+
+# Run tests in watch mode
+npm run test:watch
+
+# Run linting
+npm run lint
+
+# Preview production build
+npm run preview
 ```
 
 ## Alternative Development Methods
