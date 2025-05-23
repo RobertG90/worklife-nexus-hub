@@ -16,12 +16,13 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
+import { useNavigate } from 'react-router-dom';
 
 interface SidebarProps {
   activeSection: string;
   onSectionChange: (section: string) => void;
   onClose?: () => void;
-  errorBoundaryTestComponent?: ReactNode; // Added this prop
+  errorBoundaryTestComponent?: ReactNode;
 }
 
 const menuItems = [
@@ -35,10 +36,18 @@ const menuItems = [
 ];
 
 export function Sidebar({ activeSection, onSectionChange, onClose, errorBoundaryTestComponent }: SidebarProps) {
+  const navigate = useNavigate();
+  
   // Error boundary test component
   if (errorBoundaryTestComponent) {
     return <div>Something went wrong</div>;
   }
+
+  const handleProfileClick = () => {
+    onSectionChange('profile');
+    if (onClose) onClose();
+    navigate('/profile');
+  };
 
   return (
     <div data-testid="sidebar-container" className="w-64 h-screen overflow-y-auto flex flex-col bg-[#2D3695] text-white">
@@ -51,7 +60,12 @@ export function Sidebar({ activeSection, onSectionChange, onClose, errorBoundary
             </div>
             <div>
               <div className="flex items-center">
-                <h1 className="font-bold text-base">John Doe</h1>
+                <button 
+                  onClick={handleProfileClick}
+                  className="font-bold text-base hover:text-blue-200 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-opacity-50 rounded-sm"
+                >
+                  John Doe
+                </button>
                 {onClose && (
                   <button 
                     onClick={onClose}

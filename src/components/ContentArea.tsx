@@ -1,45 +1,29 @@
 
 import React from 'react';
-import { Dashboard } from './Dashboard';
 import { SickLeaveSection } from './sections/SickLeaveSection';
 import { EducationSection } from './sections/EducationSection';
 import { TravelSection } from './sections/TravelSection';
 import { MaintenanceSection } from './sections/MaintenanceSection';
 import { BookingSection } from './sections/BookingSection';
 import { ExpenseSection } from './sections/ExpenseSection';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { UserProfileSection } from './sections/UserProfileSection';
 import { Menu } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import Dashboard from './Dashboard';
 
 interface ContentAreaProps {
   activeSection: string;
   onSectionChange: (section: string) => void;
-  onMenuToggle?: () => void;
+  onMenuToggle: () => void;
 }
 
-export function ContentArea({ activeSection, onSectionChange, onMenuToggle }: ContentAreaProps) {
-  const navigate = useNavigate();
-  const location = useLocation();
-  const isInitialMount = React.useRef(true);
-
-  // Update URL when section changes, but only after initial mount
-  React.useEffect(() => {
-    if (isInitialMount.current) {
-      isInitialMount.current = false;
-      return;
-    }
-
-    const currentPath = location.pathname.substring(1) || 'dashboard';
-    if (currentPath !== activeSection) {
-      const newPath = activeSection === 'dashboard' ? '/' : `/${activeSection}`;
-      navigate(newPath, { replace: true });
-    }
-  }, [activeSection, navigate, location.pathname]);
-
-  const renderContent = () => {
+export const ContentArea: React.FC<ContentAreaProps> = ({
+  activeSection,
+  onSectionChange,
+  onMenuToggle
+}) => {
+  const renderSection = () => {
     switch (activeSection) {
-      case 'dashboard':
-        return <Dashboard onSectionChange={onSectionChange} />;
       case 'sick-leave':
         return <SickLeaveSection />;
       case 'education':
@@ -52,30 +36,35 @@ export function ContentArea({ activeSection, onSectionChange, onMenuToggle }: Co
         return <BookingSection />;
       case 'expenses':
         return <ExpenseSection />;
+      case 'profile':
+        return <UserProfileSection />;
+      case 'dashboard':
       default:
         return <Dashboard onSectionChange={onSectionChange} />;
     }
   };
 
   return (
-    <div className="flex-1 bg-[#f8fafc] min-h-screen">
-      {/* Mobile header with menu button */}
-      <div className="md:hidden bg-white border-b border-gray-200 p-3 sticky top-0 z-10">
-        <Button
-          variant="ghost"
-          size="sm"
+    <div className="w-full h-full flex flex-col">
+      {/* Mobile header */}
+      <header className="flex items-center justify-between p-4 border-b md:hidden">
+        <Button 
+          variant="ghost" 
+          size="icon"
           onClick={onMenuToggle}
-          className="flex items-center space-x-2"
+          aria-label="Menu"
         >
-          <Menu className="w-5 h-5" />
-          <span>Menu</span>
+          <Menu className="h-6 w-6" />
         </Button>
-      </div>
+        <h1 className="text-lg font-medium">WorkLife Nexus</h1>
+      </header>
       
-      {/* Main content */}
-      <div className="p-3 sm:p-5">
-        {renderContent()}
-      </div>
+      {/* Content */}
+      <main className="flex-1 overflow-y-auto p-6">
+        <div className="max-w-7xl mx-auto">
+          {renderSection()}
+        </div>
+      </main>
     </div>
   );
-}
+};
