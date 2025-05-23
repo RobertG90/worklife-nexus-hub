@@ -58,24 +58,22 @@ export function ContentArea({ activeSection, onSectionChange, onMenuToggle }: Co
   };
 
   return (
-    <div className="flex-1 bg-gray-50 overflow-auto">
+    <div className="flex-1 bg-gray-50 overflow-auto min-h-screen">
       {/* Mobile header with menu button */}
-      {onMenuToggle && (
-        <div className="lg:hidden bg-white border-b border-gray-200 p-4">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={onMenuToggle}
-            className="flex items-center space-x-2"
-          >
-            <Menu className="w-5 h-5" />
-            <span>Menu</span>
-          </Button>
-        </div>
-      )}
+      <div className="md:hidden bg-white border-b border-gray-200 p-4 sticky top-0 z-10">
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={onMenuToggle}
+          className="flex items-center space-x-2"
+        >
+          <Menu className="w-5 h-5" />
+          <span>Menu</span>
+        </Button>
+      </div>
       
       {/* Main content */}
-      <div className="p-4 sm:p-6 lg:p-8">
+      <div className="p-3 sm:p-4 md:p-6 lg:p-8">
         <div className="max-w-6xl mx-auto">
           {renderContent()}
         </div>

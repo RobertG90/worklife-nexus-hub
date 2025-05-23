@@ -33,9 +33,9 @@ const menuItems = [
 
 export function Sidebar({ activeSection, onSectionChange, onClose }: SidebarProps) {
   return (
-    <div className="w-80 sm:w-80 bg-white border-r border-gray-200 h-full flex flex-col">
+    <div className="w-64 sm:w-72 md:w-80 bg-white border-r border-gray-200 h-screen overflow-y-auto flex flex-col">
       {/* Header */}
-      <div className="p-4 sm:p-6 border-b border-gray-200">
+      <div className="p-3 sm:p-4 md:p-6 border-b border-gray-200">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
@@ -50,7 +50,8 @@ export function Sidebar({ activeSection, onSectionChange, onClose }: SidebarProp
           {onClose && (
             <button 
               onClick={onClose}
-              className="lg:hidden p-2 hover:bg-gray-100 rounded-md"
+              className="md:hidden p-2 hover:bg-gray-100 rounded-md"
+              aria-label="Close menu"
             >
               <X className="w-5 h-5 text-gray-500" />
             </button>
@@ -59,7 +60,7 @@ export function Sidebar({ activeSection, onSectionChange, onClose }: SidebarProp
       </div>
 
       {/* User Info */}
-      <div className="p-3 sm:p-4 border-b border-gray-100">
+      <div className="p-3 border-b border-gray-100">
         <div className="flex items-center space-x-3">
           <div className="w-6 h-6 sm:w-8 sm:h-8 bg-gray-200 rounded-full flex items-center justify-center">
             <User className="w-3 h-3 sm:w-4 sm:h-4 text-gray-600" />
@@ -73,8 +74,8 @@ export function Sidebar({ activeSection, onSectionChange, onClose }: SidebarProp
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 p-3 sm:p-4 overflow-y-auto">
-        <div className="space-y-1 sm:space-y-2">
+      <nav className="flex-1 p-2 sm:p-3 overflow-y-auto">
+        <div className="space-y-1">
           {menuItems.map((item) => {
             const Icon = item.icon;
             return (
@@ -100,7 +101,7 @@ export function Sidebar({ activeSection, onSectionChange, onClose }: SidebarProp
                     {item.label}
                   </p>
                   <p className={cn(
-                    "text-xs mt-0.5 sm:mt-1 truncate",
+                    "text-xs mt-0.5 truncate",
                     activeSection === item.id ? "text-blue-700" : "text-gray-500"
                   )}>
                     {item.description}
@@ -113,8 +114,8 @@ export function Sidebar({ activeSection, onSectionChange, onClose }: SidebarProp
       </nav>
 
       {/* Footer */}
-      <div className="p-3 sm:p-4 border-t border-gray-200">
-        <button className="w-full flex items-center space-x-2 sm:space-x-3 p-2 sm:p-3 rounded-lg text-left hover:bg-gray-50 text-gray-700">
+      <div className="p-3 border-t border-gray-200">
+        <button className="w-full flex items-center space-x-2 sm:space-x-3 p-2 rounded-lg text-left hover:bg-gray-50 text-gray-700">
           <Settings className="w-4 h-4 sm:w-5 sm:h-5 text-gray-400 flex-shrink-0" />
           <div className="flex-1 min-w-0">
             <p className="text-xs sm:text-sm font-medium truncate">Settings</p>
