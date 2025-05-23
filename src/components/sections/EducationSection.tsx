@@ -27,6 +27,10 @@ export function EducationSection() {
     navigate(`/event/${eventId}`);
   };
 
+  const handleCourseEnroll = (courseId: number) => {
+    navigate(`/course/${courseId}`);
+  };
+
   return (
     <div className="space-y-8">
       {/* Header */}
@@ -93,7 +97,13 @@ export function EducationSection() {
                     </div>
                   </div>
                   
-                  <Button size="sm" className="w-full">Enroll Now</Button>
+                  <Button 
+                    size="sm" 
+                    className="w-full"
+                    onClick={() => handleCourseEnroll(course.id)}
+                  >
+                    Enroll Now
+                  </Button>
                 </div>
               ))}
             </div>
