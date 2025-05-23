@@ -57,6 +57,11 @@ export function Sidebar({ activeSection, onSectionChange, onClose, errorBoundary
     document.body.classList.toggle('rainbow-mode');
   };
 
+  const navigateToProfile = () => {
+    navigate('/profile');
+    onSectionChange('profile');
+  };
+
   return (
     <div data-testid="sidebar-container" className="w-64 h-screen overflow-y-auto flex flex-col bg-[#2D3695] text-white">
       {/* Header */}
@@ -68,7 +73,12 @@ export function Sidebar({ activeSection, onSectionChange, onClose, errorBoundary
             </div>
             <div>
               <div className="flex items-center space-x-2">
-                <span className="font-bold text-base">John Doe</span>
+                <button 
+                  onClick={navigateToProfile} 
+                  className="font-bold text-base hover:text-blue-200 transition-colors"
+                >
+                  John Doe
+                </button>
                 <div className="flex items-center space-x-1">
                   <button
                     onClick={toggleDarkMode}
@@ -146,6 +156,15 @@ export function Sidebar({ activeSection, onSectionChange, onClose, errorBoundary
             className="text-blue-100 hover:text-white hover:bg-white/5 w-8 h-8 p-0"
           >
             <Bell className="w-4 h-4" />
+          </Button>
+          <Button 
+            onClick={() => navigate('/profile')}
+            data-testid="profile-btn"
+            variant="ghost" 
+            size="icon" 
+            className="text-blue-100 hover:text-white hover:bg-white/5 w-8 h-8 p-0"
+          >
+            <User className="w-4 h-4" />
           </Button>
           <Button 
             data-testid="settings-btn"
