@@ -8,7 +8,8 @@ import {
   AlertCircle, 
   TrendingUp,
   Calendar,
-  DollarSign
+  DollarSign,
+  ChartBar
 } from 'lucide-react';
 import { useDashboardData } from '@/hooks/useDashboardData';
 import { Link, useNavigate } from 'react-router-dom';
@@ -75,6 +76,14 @@ export function Dashboard({ onSectionChange }: DashboardProps) {
       description: 'Get reimbursed quickly',
       section: 'expenses',
       color: 'text-green-500'
+    },
+    { 
+      emoji: '📊', 
+      title: 'Expense Dashboard', 
+      description: 'View expense analytics',
+      section: 'expense-dashboard',
+      isLink: true,
+      color: 'text-purple-500'
     },
   ];
 
@@ -180,14 +189,16 @@ export function Dashboard({ onSectionChange }: DashboardProps) {
       {/* Quick Actions */}
       <Card className="p-4 md:p-6">
         <h3 className="text-base md:text-lg font-semibold text-gray-900 mb-4 md:mb-6">Quick Actions</h3>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
           {quickActions.map((action, index) => (
             <Link
-              to={`/${action.section}`}
+              to={action.isLink ? `/${action.section}` : '#'}
               key={index}
               onClick={(e) => {
-                e.preventDefault();
-                onSectionChange(action.section);
+                if (!action.isLink) {
+                  e.preventDefault();
+                  onSectionChange(action.section);
+                }
               }}
             >
               <button 
