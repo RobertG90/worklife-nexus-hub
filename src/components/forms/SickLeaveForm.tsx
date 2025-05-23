@@ -4,7 +4,7 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { useToastContext } from '@/components/ui/toast-provider';
+import { useSickLeaveRequests } from '@/hooks/useSickLeaveRequests';
 
 export function SickLeaveForm() {
   const [formData, setFormData] = useState({
@@ -13,34 +13,19 @@ export function SickLeaveForm() {
     leaveType: 'sick',
     reason: ''
   });
-  const [loading, setLoading] = useState(false);
-  const { toast } = useToastContext();
+
+  const { createRequest, isCreating } = useSickLeaveRequests();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
 
     // Validation
     if (!formData.startDate || !formData.endDate) {
-      toast({
-        title: 'Error',
-        description: 'Please select both start and end dates',
-        variant: 'destructive'
-      });
-      setLoading(false);
       return;
     }
 
-    // Simulate API call
-    setTimeout(() => {
-      toast({
-        title: 'Success!',
-        description: 'Your sick leave request has been submitted and sent to your manager.',
-        variant: 'success'
-      });
-      setFormData({ startDate: '', endDate: '', leaveType: 'sick', reason: '' });
-      setLoading(false);
-    }, 1500);
+    createRequest(formData);
+    setFormData({ startDate: '', endDate: '', leaveType: 'sick', reason: '' });
   };
 
   return (
@@ -101,10 +86,10 @@ export function SickLeaveForm() {
 
         <Button 
           type="submit" 
-          disabled={loading}
+          disabled={isCreating}
           className="w-full bg-red-600 hover:bg-red-700"
         >
-          {loading ? 'Submitting...' : 'Submit Sick Leave Request'}
+          {isCreating ? 'Submitting...' : 'Submit Sick Leave Request'}
         </Button>
       </form>
     </Card>

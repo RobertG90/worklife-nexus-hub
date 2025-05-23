@@ -4,13 +4,26 @@ import { Badge } from '@/components/ui/badge';
 import { Calendar, Clock, FileText, Heart } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { SickLeaveForm } from '@/components/forms/SickLeaveForm';
+import { useSickLeaveRequests } from '@/hooks/useSickLeaveRequests';
+import { format } from 'date-fns';
 
 export function SickLeaveSection() {
-  const recentRequests = [
-    { id: 1, date: '2024-01-15', days: 2, status: 'approved', reason: 'Flu symptoms' },
-    { id: 2, date: '2024-01-08', days: 1, status: 'approved', reason: 'Medical appointment' },
-    { id: 3, date: '2023-12-20', days: 3, status: 'approved', reason: 'Food poisoning' },
-  ];
+  const { requests, isLoading } = useSickLeaveRequests();
+
+  const calculateDays = (startDate: string, endDate: string) => {
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    const diffTime = Math.abs(end.getTime() - start.getTime());
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+    return diffDays;
+  };
+
+  const totalUsedDays = requests.reduce((total, request) => {
+    return total + calculateDays(request.start_date, request.end_date);
+  }, 0);
+
+  const totalAllocation = 12;
+  const remainingDays = totalAllocation - totalUsedDays;
 
   return (
     <div className="space-y-8">
@@ -39,15 +52,15 @@ export function SickLeaveSection() {
             <div className="space-y-3">
               <div className="flex justify-between items-center">
                 <span className="text-gray-600">Sick Days Remaining</span>
-                <Badge variant="secondary">8 days</Badge>
+                <Badge variant="secondary">{remainingDays} days</Badge>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-gray-600">Used This Year</span>
-                <span className="text-gray-900">4 days</span>
+                <span className="text-gray-900">{totalUsedDays} days</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-gray-600">Total Allocation</span>
-                <span className="text-gray-900">12 days</span>
+                <span className="text-gray-900">{totalAllocation} days</span>
               </div>
             </div>
           </Card>
@@ -75,31 +88,52 @@ export function SickLeaveSection() {
 
       {/* Recent Requests */}
       <Card className="p-6">
-        <h2 className="text-xl font-semibold text-gray-900 mb-6">Recent Sick Leave Requests</h2>
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead>
-              <tr className="border-b border-gray-200">
-                <th className="text-left py-3 px-4 font-medium text-gray-700">Date</th>
-                <th className="text-left py-3 px-4 font-medium text-gray-700">Duration</th>
-                <th className="text-left py-3 px-4 font-medium text-gray-700">Reason</th>
-                <th className="text-left py-3 px-4 font-medium text-gray-700">Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {recentRequests.map((request) => (
-                <tr key={request.id} className="border-b border-gray-100">
-                  <td className="py-3 px-4 text-gray-900">{request.date}</td>
-                  <td className="py-3 px-4 text-gray-600">{request.days} day{request.days > 1 ? 's' : ''}</td>
-                  <td className="py-3 px-4 text-gray-600">{request.reason}</td>
-                  <td className="py-3 px-4">
-                    <Badge className="bg-green-100 text-green-800">{request.status}</Badge>
-                  </td>
+        <h2 className="text-xl font-semibold text-gray-900 mb-6">Your Sick Leave Requests</h2>
+        {isLoading ? (
+          <div className="text-center py-8 text-gray-500">Loading your requests...</div>
+        ) : requests.length === 0 ? (
+          <div className="text-center py-8 text-gray-500">No sick leave requests yet. Submit your first request above!</div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr className="border-b border-gray-200">
+                  <th className="text-left py-3 px-4 font-medium text-gray-700">Date Range</th>
+                  <th className="text-left py-3 px-4 font-medium text-gray-700">Duration</th>
+                  <th className="text-left py-3 px-4 font-medium text-gray-700">Type</th>
+                  <th className="text-left py-3 px-4 font-medium text-gray-700">Reason</th>
+                  <th className="text-left py-3 px-4 font-medium text-gray-700">Status</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {requests.map((request) => {
+                  const days = calculateDays(request.start_date, request.end_date);
+                  return (
+                    <tr key={request.id} className="border-b border-gray-100">
+                      <td className="py-3 px-4 text-gray-900">
+                        {format(new Date(request.start_date), 'MMM dd')} - {format(new Date(request.end_date), 'MMM dd, yyyy')}
+                      </td>
+                      <td className="py-3 px-4 text-gray-600">{days} day{days > 1 ? 's' : ''}</td>
+                      <td className="py-3 px-4 text-gray-600 capitalize">{request.leave_type}</td>
+                      <td className="py-3 px-4 text-gray-600">{request.reason || 'No reason provided'}</td>
+                      <td className="py-3 px-4">
+                        <Badge 
+                          className={
+                            request.status === 'approved' ? 'bg-green-100 text-green-800' :
+                            request.status === 'rejected' ? 'bg-red-100 text-red-800' :
+                            'bg-yellow-100 text-yellow-800'
+                          }
+                        >
+                          {request.status}
+                        </Badge>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        )}
       </Card>
     </div>
   );
