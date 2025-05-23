@@ -21,6 +21,65 @@ WorkLife Nexus Hub uses Supabase as its primary database, providing:
 - **activities**: User action logging
 - **notifications**: System notifications
 
+### System Architecture
+
+```mermaid
+graph TD
+    subgraph "Frontend Layer"
+        UI[User Interface]
+        RC[React Components]
+        RQ[React Query]
+        RT[React Router]
+    end
+
+    subgraph "API Layer"
+        API[API Endpoints]
+        AUTH[Authentication]
+        RLS[Row Level Security]
+    end
+
+    subgraph "Database Layer"
+        SUP[Supabase]
+        REAL[Realtime Updates]
+        subgraph "Tables"
+            USERS[Users]
+            SICK[Sick Leaves]
+            EXP[Expenses]
+            BOOK[Bookings]
+            ACT[Activities]
+            NOT[Notifications]
+        end
+    end
+
+    subgraph "External Services"
+        S3[File Storage]
+        AUTH_P[Auth Providers]
+    end
+
+    UI --> RC
+    RC --> RQ
+    RC --> RT
+    RQ --> API
+    RT --> API
+    API --> AUTH
+    AUTH --> RLS
+    RLS --> SUP
+    SUP --> REAL
+    REAL --> RQ
+    SUP --> USERS
+    SUP --> SICK
+    SUP --> EXP
+    SUP --> BOOK
+    SUP --> ACT
+    SUP --> NOT
+    SUP --> S3
+    AUTH --> AUTH_P
+
+    style UI fill:#f9f,stroke:#333,stroke-width:2px
+    style SUP fill:#bbf,stroke:#333,stroke-width:2px
+    style API fill:#bfb,stroke:#333,stroke-width:2px
+```
+
 ## Application Layout
 
 ### 🎨 UI Structure
