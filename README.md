@@ -451,3 +451,159 @@ To connect a custom domain:
 3. Follow the setup instructions
 
 For detailed instructions, visit: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+
+# Vibe Mode Feature Documentation
+
+## Overview
+Vibe Mode is a fun, interactive feature that transforms the user interface into a celebratory experience. When activated, it adds various visual effects, animations, and celebratory elements throughout the application.
+
+## Features
+
+### 1. Visual Effects
+- **Rainbow Text**: Text elements animate through a spectrum of colors
+- **Gradient Backgrounds**: Dynamic, shifting gradient backgrounds
+- **Pattern Overlays**: Subtle animated SVG patterns
+- **Blur Effects**: Frosted glass effect on cards
+- **Text Shadows**: Enhanced text visibility with subtle shadows
+
+### 2. Animations
+- **Confetti**: Temporary confetti shower when vibe mode is activated
+- **Celebration GIFs**: Animated GIFs in all four corners
+- **Floating Elements**: Cards and UI elements gently float
+- **Rotating Icons**: Icons spin continuously
+- **Bouncing Headers**: Headers bounce subtly
+- **Pulsing Buttons**: Interactive buttons pulse
+- **Wiggling Text**: Text elements wiggle playfully
+
+### 3. Components
+
+#### VibeButton Component
+```tsx
+<VibeButton />
+```
+- Toggle button for activating/deactivating vibe mode
+- Displays current emoji when active
+- Features a bouncing sparkle indicator
+- Smooth transition animations
+
+#### VibeContext
+```tsx
+import { useVibe } from '@/contexts/VibeContext';
+const { isVibeMode, toggleVibeMode, currentEmoji } = useVibe();
+```
+- Manages global vibe mode state
+- Provides context for vibe-related features
+- Handles emoji rotation and animations
+- Controls confetti and GIF displays
+
+### 4. CSS Classes
+
+#### Base Classes
+- `.vibe-mode`: Root class for vibe mode styles
+- `.vibe-text`: Animated rainbow text
+- `.vibe-bg`: Gradient background with patterns
+- `.vibe-card`: Floating card with blur effect
+- `.vibe-button`: Pulsing button animation
+- `.vibe-icon`: Rotating icon animation
+- `.vibe-heading`: Bouncing heading animation
+
+#### Animation Keyframes
+- `@keyframes rainbow`: Color cycling
+- `@keyframes gradientBG`: Background position shift
+- `@keyframes pulse`: Scale pulsing
+- `@keyframes wiggle`: Text wiggle
+- `@keyframes float`: Vertical floating
+- `@keyframes spin`: Icon rotation
+- `@keyframes bounce`: Vertical bouncing
+- `@keyframes rotate`: Pattern rotation
+
+### 5. Implementation
+
+#### Setup
+1. Wrap your app with the VibeProvider:
+```tsx
+<VibeProvider>
+  <App />
+</VibeProvider>
+```
+
+2. Import and use the VibeButton component:
+```tsx
+import { VibeButton } from './components/VibeButton';
+```
+
+3. Add vibe classes to your components:
+```tsx
+const { isVibeMode } = useVibe();
+
+return (
+  <div className={`my-component ${isVibeMode ? 'vibe-card' : ''}`}>
+    {/* Component content */}
+  </div>
+);
+```
+
+#### Customization
+- Emoji Set: Modify `EMOJIS` array in `VibeContext.tsx`
+- GIF Collection: Update `CELEBRATION_GIFS` array in `VibeContext.tsx`
+- Animation Timing: Adjust durations in `vibe.css`
+- Visual Effects: Modify CSS variables and keyframes in `vibe.css`
+
+### 6. Performance Considerations
+- Confetti effect is limited to 5 seconds on activation
+- GIFs are loaded only when vibe mode is active
+- CSS animations use hardware acceleration where possible
+- Blur effects are conditionally applied
+- Event listeners are properly cleaned up
+
+### 7. Accessibility
+- All animations respect `prefers-reduced-motion`
+- Interactive elements maintain proper contrast
+- GIFs are decorative and don't interfere with content
+- Toggle state is properly announced to screen readers
+
+### 8. Browser Support
+- Works in all modern browsers
+- Fallbacks for older browsers:
+  - Simplified animations
+  - Static colors instead of gradients
+  - No blur effects where not supported
+
+## Dependencies
+- `react-confetti`: For confetti effects
+- `framer-motion`: For GIF container animations
+- `lucide-react`: For icons
+- Modern CSS features:
+  - CSS Grid
+  - Flexbox
+  - CSS Variables
+  - CSS Animations
+  - Backdrop Filter
+
+## Best Practices
+1. Use vibe mode classes judiciously
+2. Keep animations subtle and non-disruptive
+3. Ensure all content remains readable
+4. Maintain performance with conditional rendering
+5. Clean up resources when vibe mode is disabled
+
+## Example Usage
+```tsx
+function MyComponent() {
+  const { isVibeMode, currentEmoji } = useVibe();
+  
+  return (
+    <div className={`container ${isVibeMode ? 'vibe-bg' : ''}`}>
+      <h1 className={`title ${isVibeMode ? 'vibe-heading' : ''}`}>
+        Welcome {isVibeMode && currentEmoji}
+      </h1>
+      <div className={`card ${isVibeMode ? 'vibe-card' : ''}`}>
+        <p className={`text ${isVibeMode ? 'vibe-text' : ''}`}>
+          Content goes here
+        </p>
+      </div>
+      <VibeButton />
+    </div>
+  );
+}
+```
