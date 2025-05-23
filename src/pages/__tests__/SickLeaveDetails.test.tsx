@@ -1,153 +1,163 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { screen, waitFor } from '@testing-library/react';
+import { describe, it, expect, vi } from 'vitest';
+import { render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import SickLeaveDetails from '../SickLeaveDetails';
-import { render } from '@/test/utils';
-import { supabase } from '@/integrations/supabase/client';
+import { server } from '../../tests/setup';
+import { HttpResponse, http } from 'msw';
 
 describe('SickLeaveDetails Component', () => {
-  beforeEach(() => {
-    // Reset history before each test
-    window.history.pushState({}, '', '/');
+  const mockNavigate = vi.fn();
+  const mockParams = { id: '1' };
+
+  vi.mock('react-router-dom', async () => {
+    const actual = await vi.importActual('react-router-dom');
+    return {
+      ...actual,
+      useNavigate: () => mockNavigate,
+      useParams: () => mockParams
+    };
   });
 
-  it('displays loading state initially', async () => {
-    // Mock loading state
-    vi.mocked(supabase.from).mockImplementationOnce(() => ({
-      select: vi.fn(() => ({
-        eq: vi.fn(() => ({
-          single: vi.fn(() => new Promise(() => {})) // Never resolves to simulate loading
-        }))
-      }))
-    }));
+  const mockSickLeave = {
+    id: 1,
+    employeeId: 'emp123',
+    startDate: '2024-03-20',
+    endDate: '2024-03-22',
+    reason: 'Flu symptoms',
+    status: 'pending',
+    documents: ['medical-cert.pdf'],
+    notes: 'Will work remotely if needed',
+    timeline: [
+      {
+        id: 1,
+        date: '2024-03-19',
+        status: 'submitted',
+        description: 'Request Submitted'
+      }
+    ]
+  };
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    server.use(
+      http.get('/api/sick-leave/:id', () => {
+        return HttpResponse.json(mockSickLeave);
+      })
+    );
+  });
+
+  it('displays loading state initially', () => {
+    server.use(
+      http.get('/api/sick-leave/:id', async () => {
+        await new Promise(resolve => setTimeout(resolve, 100));
+        return HttpResponse.json(mockSickLeave);
+      })
+    );
 
     render(<SickLeaveDetails />);
-    expect(screen.getByText(/Loading sick leave details/i)).toBeInTheDocument();
-  });
-
-  it('shows error state for non-existent sick leave', async () => {
-    // Mock error response
-    vi.mocked(supabase.from).mockImplementationOnce(() => ({
-      select: vi.fn(() => ({
-        eq: vi.fn(() => ({
-          single: vi.fn(() => ({
-            data: null,
-            error: { message: 'Not found' }
-          }))
-        }))
-      }))
-    }));
-
-    render(<SickLeaveDetails />, { route: '/sick-leave/999' });
-
-    await waitFor(() => {
-      expect(screen.getByText('Sick Leave Not Found')).toBeInTheDocument();
-      expect(
-        screen.getByText("The sick leave request you're looking for doesn't exist.")
-      ).toBeInTheDocument();
-    });
+    expect(screen.getByRole('progressbar')).toBeInTheDocument();
   });
 
   it('shows sick leave details after loading', async () => {
-    // Mock successful response
-    vi.mocked(supabase.from).mockImplementationOnce(() => ({
-      select: vi.fn(() => ({
-        eq: vi.fn(() => ({
-          single: vi.fn(() => ({
-            data: {
-              id: '1',
-              start_date: '2024-03-20',
-              end_date: '2024-03-22',
-              status: 'pending',
-              leave_type: 'sick',
-              reason: 'Flu',
-              created_at: '2024-03-19T10:00:00Z',
-              updated_at: '2024-03-19T10:00:00Z'
-            },
-            error: null
-          }))
-        }))
-      }))
-    }));
-
-    render(<SickLeaveDetails />, { route: '/sick-leave/1' });
+    render(<SickLeaveDetails />);
 
     await waitFor(() => {
       // Check basic information
-      expect(screen.getByText(/Sick Leave Details/i)).toBeInTheDocument();
-      expect(screen.getByText(/Request #1/i)).toBeInTheDocument();
-      
-      // Check dates
-      expect(screen.getByText(/Wednesday, March 20th, 2024/i)).toBeInTheDocument();
-      expect(screen.getByText(/Friday, March 22nd, 2024/i)).toBeInTheDocument();
-      
-      // Check status and type
-      expect(screen.getByText(/pending/i)).toBeInTheDocument();
-      expect(screen.getByText(/sick/i)).toBeInTheDocument();
-      
-      // Check reason
-      expect(screen.getByText('Flu')).toBeInTheDocument();
+      expect(screen.getByRole('heading', { name: /Sick Leave Request/i })).toBeInTheDocument();
+      expect(screen.getByText(mockSickLeave.reason)).toBeInTheDocument();
+      expect(screen.getByText(mockSickLeave.notes)).toBeInTheDocument();
     });
+
+    // Check dates
+    expect(screen.getByText(new RegExp(mockSickLeave.startDate))).toBeInTheDocument();
+    expect(screen.getByText(new RegExp(mockSickLeave.endDate))).toBeInTheDocument();
+
+    // Check status
+    expect(screen.getByText(new RegExp(mockSickLeave.status, 'i'))).toBeInTheDocument();
   });
 
   it('displays timeline information', async () => {
-    // Mock successful response
-    vi.mocked(supabase.from).mockImplementationOnce(() => ({
-      select: vi.fn(() => ({
-        eq: vi.fn(() => ({
-          single: vi.fn(() => ({
-            data: {
-              id: '1',
-              start_date: '2024-03-20',
-              end_date: '2024-03-22',
-              status: 'pending',
-              leave_type: 'sick',
-              reason: 'Flu',
-              created_at: '2024-03-19T10:00:00Z',
-              updated_at: '2024-03-19T10:00:00Z'
-            },
-            error: null
-          }))
-        }))
-      }))
-    }));
-
-    render(<SickLeaveDetails />, { route: '/sick-leave/1' });
+    render(<SickLeaveDetails />);
 
     await waitFor(() => {
-      expect(screen.getByText(/Timeline/i)).toBeInTheDocument();
+      expect(screen.getByRole('heading', { name: /Timeline/i })).toBeInTheDocument();
       expect(screen.getByText('Request Submitted')).toBeInTheDocument();
-      expect(screen.getByText(/Mar 19, 2024 at/i)).toBeInTheDocument();
+      expect(screen.getByText(new RegExp(mockSickLeave.timeline[0].date))).toBeInTheDocument();
     });
   });
 
   it('shows edit button for pending requests', async () => {
-    // Mock successful response
-    vi.mocked(supabase.from).mockImplementationOnce(() => ({
-      select: vi.fn(() => ({
-        eq: vi.fn(() => ({
-          single: vi.fn(() => ({
-            data: {
-              id: '1',
-              start_date: '2024-03-20',
-              end_date: '2024-03-22',
-              status: 'pending',
-              leave_type: 'sick',
-              reason: 'Flu',
-              created_at: '2024-03-19T10:00:00Z',
-              updated_at: '2024-03-19T10:00:00Z'
-            },
-            error: null
-          }))
-        }))
-      }))
-    }));
-
-    render(<SickLeaveDetails />, { route: '/sick-leave/1' });
+    render(<SickLeaveDetails />);
 
     await waitFor(() => {
-      const editButton = screen.getByText(/Edit Request/i);
+      const editButton = screen.getByRole('button', { name: /Edit Request/i });
       expect(editButton).toBeInTheDocument();
-      expect(editButton).toBeEnabled();
+      expect(editButton).not.toBeDisabled();
     });
+  });
+
+  it('handles API errors gracefully', async () => {
+    server.use(
+      http.get('/api/sick-leave/:id', () => {
+        return new HttpResponse(null, { status: 500 });
+      })
+    );
+
+    render(<SickLeaveDetails />);
+
+    await waitFor(() => {
+      expect(screen.getByRole('alert')).toHaveTextContent(/Error loading sick leave details/i);
+    });
+  });
+
+  it('handles not found errors', async () => {
+    server.use(
+      http.get('/api/sick-leave/:id', () => {
+        return new HttpResponse(null, { status: 404 });
+      })
+    );
+
+    render(<SickLeaveDetails />);
+
+    await waitFor(() => {
+      expect(screen.getByRole('heading', { name: /Sick Leave Not Found/i })).toBeInTheDocument();
+      expect(screen.getByText(/The sick leave request you're looking for doesn't exist/i)).toBeInTheDocument();
+    });
+  });
+
+  it('navigates back on button click', async () => {
+    const user = userEvent.setup();
+    render(<SickLeaveDetails />);
+
+    await waitFor(() => {
+      const backButton = screen.getByRole('button', { name: /Back to Sick Leave/i });
+      expect(backButton).toBeInTheDocument();
+    });
+
+    const backButton = screen.getByRole('button', { name: /Back to Sick Leave/i });
+    await user.click(backButton);
+    expect(mockNavigate).toHaveBeenCalledWith('/sick-leave');
+  });
+
+  it('shows document list', async () => {
+    render(<SickLeaveDetails />);
+
+    await waitFor(() => {
+      expect(screen.getByRole('heading', { name: /Documents/i })).toBeInTheDocument();
+      expect(screen.getByText('medical-cert.pdf')).toBeInTheDocument();
+    });
+  });
+
+  it('supports keyboard navigation', async () => {
+    const user = userEvent.setup();
+    render(<SickLeaveDetails />);
+
+    await waitFor(() => {
+      const editButton = screen.getByRole('button', { name: /Edit Request/i });
+      editButton.focus();
+    });
+
+    await user.keyboard('[Tab]');
+    expect(document.activeElement).not.toBe(screen.getByRole('button', { name: /Edit Request/i }));
   });
 }); 
