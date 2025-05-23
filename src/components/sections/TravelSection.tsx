@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -18,12 +17,14 @@ import {
 import { TravelExpenseForm } from '@/components/forms/TravelExpenseForm';
 import { useTravelExpenses } from '@/hooks/useTravelExpenses';
 import { useTripBookings } from '@/hooks/useTripBookings';
+import { useNavigate } from 'react-router-dom';
 
 export function TravelSection() {
   const [tripType, setTripType] = useState('domestic');
   const [activeTab, setActiveTab] = useState('book-trip');
   const { expenses, isLoading } = useTravelExpenses();
   const { bookings, isLoading: isBookingsLoading, createBooking, isCreating } = useTripBookings();
+  const navigate = useNavigate();
 
   // Form state for trip booking
   const [formData, setFormData] = useState({
@@ -86,6 +87,10 @@ export function TravelSection() {
       default:
         return 'bg-orange-100 text-orange-800';
     }
+  };
+
+  const handleViewTripDetails = (bookingId: string) => {
+    navigate(`/trip-booking/${bookingId}`);
   };
 
   return (
@@ -430,7 +435,13 @@ export function TravelSection() {
                         </Badge>
                       </td>
                       <td className="py-3 px-4">
-                        <Button size="sm" variant="outline">View Details</Button>
+                        <Button 
+                          size="sm" 
+                          variant="outline"
+                          onClick={() => handleViewTripDetails(booking.id)}
+                        >
+                          View Details
+                        </Button>
                       </td>
                     </tr>
                   ))}

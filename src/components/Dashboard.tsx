@@ -79,6 +79,8 @@ export function Dashboard({ onSectionChange }: DashboardProps) {
   const handleActivityClick = (activity: any) => {
     if (activity.type === 'sick-leave') {
       navigate(`/sick-leave/${activity.id}`);
+    } else if (activity.type === 'trip-booking') {
+      navigate(`/trip-booking/${activity.id}`);
     } else {
       onSectionChange(activity.section);
     }
