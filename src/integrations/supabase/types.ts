@@ -96,6 +96,54 @@ export type Database = {
         }
         Relationships: []
       }
+      trip_bookings: {
+        Row: {
+          accommodation: string
+          created_at: string
+          departure_date: string
+          from_location: string
+          id: string
+          preferred_time: string
+          purpose: string
+          return_date: string
+          status: string
+          to_location: string
+          trip_type: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          accommodation: string
+          created_at?: string
+          departure_date: string
+          from_location: string
+          id?: string
+          preferred_time: string
+          purpose: string
+          return_date: string
+          status?: string
+          to_location: string
+          trip_type: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          accommodation?: string
+          created_at?: string
+          departure_date?: string
+          from_location?: string
+          id?: string
+          preferred_time?: string
+          purpose?: string
+          return_date?: string
+          status?: string
+          to_location?: string
+          trip_type?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

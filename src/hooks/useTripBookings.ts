@@ -1,5 +1,6 @@
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 import { useToastContext } from '@/components/ui/toast-provider';
 
 export interface TripBooking {
@@ -22,12 +23,20 @@ export function useTripBookings() {
   const { toast } = useToastContext();
   const queryClient = useQueryClient();
 
-  // Temporarily return empty data until the table is created
   const { data: bookings, isLoading } = useQuery({
     queryKey: ['trip-bookings'],
     queryFn: async () => {
-      // Return empty array until trip_bookings table is properly set up
-      return [] as TripBooking[];
+      const { data, error } = await supabase
+        .from('trip_bookings')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error('Error fetching trip bookings:', error);
+        throw error;
+      }
+
+      return data as TripBooking[];
     },
   });
 
@@ -42,17 +51,44 @@ export function useTripBookings() {
       preferredTime: string;
       accommodation: string;
     }) => {
-      // Temporarily return mock data until table is created
-      toast({
-        title: 'Feature Coming Soon!',
-        description: 'Trip booking functionality will be available once the database is set up.',
-        variant: 'default'
-      });
-      return { id: 'temp-id' };
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) {
+        throw new Error('User must be logged in to create a booking');
+      }
+
+      const { data, error } = await supabase
+        .from('trip_bookings')
+        .insert({
+          user_id: user.id,
+          trip_type: bookingData.tripType,
+          from_location: bookingData.fromLocation,
+          to_location: bookingData.toLocation,
+          departure_date: bookingData.departureDate,
+          return_date: bookingData.returnDate,
+          purpose: bookingData.purpose,
+          preferred_time: bookingData.preferredTime,
+          accommodation: bookingData.accommodation,
+        })
+        .select()
+        .single();
+
+      if (error) {
+        console.error('Error creating trip booking:', error);
+        throw error;
+      }
+
+      return data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['trip-bookings'] });
       queryClient.invalidateQueries({ queryKey: ['recent-activities'] });
+      queryClient.invalidateQueries({ queryKey: ['dashboard-stats'] });
+      toast({
+        title: 'Trip Request Submitted!',
+        description: 'Your business trip request has been submitted for approval.',
+        variant: 'default'
+      });
     },
     onError: (error) => {
       console.error('Error creating trip booking:', error);
