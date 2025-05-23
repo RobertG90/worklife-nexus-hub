@@ -2,6 +2,116 @@
 
 A comprehensive workplace management system that helps employees manage their work-life balance through various automated processes and requests.
 
+🌐 **Live Application**: [https://officetool2.netlify.app/](https://officetool2.netlify.app/)
+
+## Database Architecture
+
+### 🗄️ Supabase Database
+WorkLife Nexus Hub uses Supabase as its primary database, providing:
+- **Real-time Updates**: Instant synchronization of data changes
+- **Row Level Security**: Fine-grained access control
+- **Type Safety**: Full TypeScript integration
+- **Authentication**: Built-in user management
+
+### Key Tables
+- **users**: Employee profiles and authentication
+- **sick_leaves**: Sick leave requests and status
+- **expenses**: Expense claims and receipts
+- **bookings**: Resource reservations
+- **activities**: User action logging
+- **notifications**: System notifications
+
+## Application Layout
+
+### 🎨 UI Structure
+1. **Sidebar Navigation**
+   - User profile section
+   - Main navigation menu
+   - Quick access buttons
+   - System status indicators
+
+2. **Header Area**
+   - Section title
+   - Action buttons
+   - Search functionality
+   - Notifications
+
+3. **Main Content Area**
+   - Dynamic content based on selected section
+   - Responsive grid layout
+   - Card-based components
+   - Data tables and forms
+
+4. **Design System**
+   - Levi9's brand colors and gradients
+   - Modern card layouts with hover effects
+   - Consistent spacing and typography
+   - Responsive breakpoints
+   - Interactive animations
+
+## Portal Actions
+
+### 👤 User Management
+- **Profile Management**
+  - Update personal information
+  - Change password
+  - Set notification preferences
+  - Configure two-factor authentication
+
+### 🏥 Sick Leave
+- **Request Management**
+  - Submit new sick leave requests
+  - Upload medical certificates
+  - Track request status
+  - View leave history
+  - Cancel pending requests
+  - Receive approval notifications
+
+### 💼 Resource Booking
+- **Company Resources**
+  - Book meeting rooms
+  - Reserve company cars
+  - Schedule equipment usage
+  - View availability calendar
+  - Manage recurring bookings
+  - Cancel or modify reservations
+
+### 💰 Expense Management
+- **Financial Operations**
+  - Submit expense claims
+  - Upload receipts
+  - Track reimbursement status
+  - View expense history
+  - Generate expense reports
+  - Export data to Excel
+
+### 📚 Education & Training
+- **Learning Management**
+  - Browse available courses
+  - Register for training sessions
+  - Track learning progress
+  - Download certificates
+  - Submit feedback
+  - View upcoming events
+
+### 🔧 Maintenance Requests
+- **Facility Management**
+  - Report facility issues
+  - Track repair status
+  - Upload issue photos
+  - Rate service quality
+  - View maintenance history
+  - Receive status updates
+
+### 📊 Analytics Dashboard
+- **Data Visualization**
+  - View personal statistics
+  - Track department metrics
+  - Monitor resource utilization
+  - Analyze expense patterns
+  - Export custom reports
+  - Set up automated reports
+
 ## Features
 
 ### 🎯 Dashboard Overview
