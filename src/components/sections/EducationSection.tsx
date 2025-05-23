@@ -1,9 +1,10 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
-import { Calendar } from 'lucide-react';
-import { eventsData, coursesData } from '@/data/education';
+import { Calendar, GraduationCap } from 'lucide-react';
+import { events, courses } from '@/data/educationData';
 import { Link } from 'react-router-dom';
 import { NavigationButtons } from '@/components/NavigationButtons';
 
@@ -31,7 +32,7 @@ export function EducationSection() {
         </TabsList>
         <TabsContent value="events" className="space-y-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {eventsData.map((event) => (
+            {events.map((event) => (
               <Link key={event.id} to={`/event/${event.id}`}>
                 <Card className="bg-white hover:shadow-md transition-shadow duration-300">
                   <CardHeader>
@@ -52,7 +53,7 @@ export function EducationSection() {
         </TabsContent>
         <TabsContent value="courses" className="space-y-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {coursesData.map((course) => (
+            {courses.map((course) => (
               <Link key={course.id} to={`/course/${course.id}`}>
                 <Card className="bg-white hover:shadow-md transition-shadow duration-300">
                   <CardHeader>
