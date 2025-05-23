@@ -18,12 +18,20 @@ export function ContentArea({ activeSection, onSectionChange }: ContentAreaProps
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Update URL when section changes
+  // Update URL when section changes, but avoid conflicts with direct navigation
   React.useEffect(() => {
-    if (location.pathname !== `/${activeSection}` && activeSection !== 'dashboard') {
-      navigate(`/${activeSection}`);
-    } else if (activeSection === 'dashboard' && location.pathname !== '/') {
-      navigate('/');
+    // Only navigate if we're not already on a detail page and the URL doesn't match
+    const isDetailPage = location.pathname.includes('/course/') || 
+                         location.pathname.includes('/event/') || 
+                         location.pathname.includes('/sick-leave/') || 
+                         location.pathname.includes('/trip-booking/');
+    
+    if (!isDetailPage) {
+      if (location.pathname !== `/${activeSection}` && activeSection !== 'dashboard') {
+        navigate(`/${activeSection}`);
+      } else if (activeSection === 'dashboard' && location.pathname !== '/') {
+        navigate('/');
+      }
     }
   }, [activeSection, navigate, location.pathname]);
 
