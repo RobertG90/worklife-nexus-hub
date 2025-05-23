@@ -1,0 +1,117 @@
+/* Vibe mode styles */
+.vibe-mode .vibe-text {
+  animation: rainbow 5s linear infinite, wiggle 1s ease-in-out infinite;
+  font-family: "Comic Sans MS", "Chalkboard SE", "Marker Felt", cursive;
+}
+
+.vibe-mode .vibe-bg {
+  background: linear-gradient(45deg, #ff61d8, #9c61ff, #61a8ff, #ff61d8);
+  background-size: 400% 400%;
+  animation: gradientBG 5s ease infinite;
+  position: relative;
+  overflow: hidden;
+}
+
+.vibe-mode .vibe-bg::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url('data:image/svg+xml,<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="45" fill="none" stroke="white" stroke-width="2" stroke-dasharray="10 10"/></svg>') center/50px 50px repeat;
+  opacity: 0.1;
+  animation: rotate 20s linear infinite;
+}
+
+.vibe-mode .vibe-button {
+  transform-origin: center;
+  animation: pulse 1s ease infinite;
+}
+
+.vibe-mode .vibe-card {
+  animation: float 3s ease-in-out infinite;
+  backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.1);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.vibe-mode .vibe-icon {
+  animation: spin 2s linear infinite;
+}
+
+.vibe-mode .vibe-heading {
+  animation: bounce 1s ease infinite;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+@keyframes rainbow {
+  0% { color: #ff61d8; }
+  33% { color: #9c61ff; }
+  66% { color: #61a8ff; }
+  100% { color: #ff61d8; }
+}
+
+@keyframes gradientBG {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+@keyframes wiggle {
+  0%, 100% { transform: rotate(-3deg); }
+  50% { transform: rotate(3deg); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+
+@keyframes rotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Fun GIF container */
+.vibe-mode .gif-container {
+  position: fixed;
+  pointer-events: none;
+  z-index: 50;
+}
+
+.vibe-mode .gif-container.top-left {
+  top: 20px;
+  left: 20px;
+}
+
+.vibe-mode .gif-container.top-right {
+  top: 20px;
+  right: 20px;
+}
+
+.vibe-mode .gif-container.bottom-left {
+  bottom: 20px;
+  left: 20px;
+}
+
+.vibe-mode .gif-container.bottom-right {
+  bottom: 20px;
+  right: 20px;
+} 

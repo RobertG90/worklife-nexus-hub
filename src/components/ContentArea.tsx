@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { SickLeaveSection } from './sections/SickLeaveSection';
 import { EducationSection } from './sections/EducationSection';
@@ -10,6 +9,8 @@ import { UserProfileSection } from './sections/UserProfileSection';
 import { Menu } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Dashboard } from './Dashboard';
+import { VibeButton } from './VibeButton';
+import { useVibe } from '@/contexts/VibeContext';
 
 interface ContentAreaProps {
   activeSection: string;
@@ -22,6 +23,8 @@ export const ContentArea: React.FC<ContentAreaProps> = ({
   onSectionChange,
   onMenuToggle
 }) => {
+  const { isVibeMode, currentEmoji } = useVibe();
+
   const renderSection = () => {
     switch (activeSection) {
       case 'sick-leave':
@@ -45,23 +48,35 @@ export const ContentArea: React.FC<ContentAreaProps> = ({
   };
 
   return (
-    <div className="w-full h-full flex flex-col">
+    <div className={`w-full h-full flex flex-col ${isVibeMode ? 'vibe-bg' : ''}`}>
       {/* Mobile header */}
-      <header className="flex items-center justify-between p-4 border-b md:hidden">
+      <header className={`flex items-center justify-between p-4 border-b md:hidden ${isVibeMode ? 'vibe-card' : ''}`}>
         <Button 
           variant="ghost" 
           size="icon"
           onClick={onMenuToggle}
           aria-label="Menu"
+          className={isVibeMode ? 'vibe-icon' : ''}
         >
           <Menu className="h-6 w-6" />
         </Button>
-        <h1 className="text-lg font-medium">WorkLife Nexus</h1>
+        <h1 className={`text-lg font-medium ${isVibeMode ? 'vibe-heading' : ''}`}>
+          WorkLife Nexus {isVibeMode && currentEmoji}
+        </h1>
+        <VibeButton />
+      </header>
+      
+      {/* Desktop header */}
+      <header className={`hidden md:flex items-center justify-between p-4 border-b ${isVibeMode ? 'vibe-card' : ''}`}>
+        <h1 className={`text-lg font-medium ${isVibeMode ? 'vibe-heading' : ''}`}>
+          WorkLife Nexus {isVibeMode && currentEmoji}
+        </h1>
+        <VibeButton />
       </header>
       
       {/* Content */}
-      <main className="flex-1 overflow-y-auto p-6">
-        <div className="max-w-7xl mx-auto">
+      <main className={`flex-1 overflow-y-auto p-6 ${isVibeMode ? 'vibe-text' : ''}`}>
+        <div className={`max-w-7xl mx-auto ${isVibeMode ? 'vibe-card p-6 rounded-lg' : ''}`}>
           {renderSection()}
         </div>
       </main>
