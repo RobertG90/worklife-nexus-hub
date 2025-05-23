@@ -1,5 +1,6 @@
+
 import React from 'react';
-import { Calendar } from '@/components/Calendar';
+import { Calendar } from '@/components/ui/calendar';
 import { NavigationButtons } from '@/components/NavigationButtons';
 
 export default function UpcomingTripsCalendar() {
@@ -40,8 +41,24 @@ export default function UpcomingTripsCalendar() {
         </div>
         
         {/* Calendar */}
-        <div className="bg-white shadow overflow-hidden rounded-md">
-          <Calendar events={events} />
+        <div className="bg-white shadow overflow-hidden rounded-md p-6">
+          <Calendar mode="single" className="rounded-md border" />
+          
+          {/* Events List */}
+          <div className="mt-6">
+            <h2 className="text-lg font-semibold mb-4">Upcoming Events</h2>
+            <div className="space-y-3">
+              {events.map((event) => (
+                <div key={event.id} className="p-4 border rounded-lg">
+                  <h3 className="font-medium">{event.title}</h3>
+                  <p className="text-sm text-gray-600">{event.location}</p>
+                  <p className="text-sm text-gray-500">
+                    {event.start.toLocaleDateString()} - {event.end.toLocaleDateString()}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
     </div>

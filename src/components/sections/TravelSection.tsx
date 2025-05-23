@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { TravelExpenseForm } from '@/components/forms/TravelExpenseForm';
@@ -54,7 +55,7 @@ export function TravelSection() {
           />
         </TabsContent>
         <TabsContent value="new">
-          <TravelExpenseForm onSubmit={createExpense} />
+          <TravelExpenseForm />
         </TabsContent>
       </Tabs>
     </div>
