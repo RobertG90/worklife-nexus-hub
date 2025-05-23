@@ -4,13 +4,16 @@ import { Badge } from '@/components/ui/badge';
 import { 
   Clock, 
   CheckCircle, 
-  AlertCircle, 
   TrendingUp,
   Calendar,
-  DollarSign
+  DollarSign,
+  ArrowRight,
+  Activity,
+  Shield
 } from 'lucide-react';
 import { useDashboardData } from '@/hooks/useDashboardData';
 import { Link, useNavigate } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
 
 interface DashboardProps {
   onSectionChange: (section: string) => void;
@@ -90,19 +93,22 @@ export function Dashboard({ onSectionChange }: DashboardProps) {
   return (
     <div className="space-y-8">
       {/* Welcome Section */}
-      <div className="bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl p-8 text-white">
-        <h2 className="text-3xl font-bold mb-2">Welcome back, John! 👋</h2>
-        <p className="text-blue-100 text-lg">
-          Ready to optimize your workday? Everything you need is just a click away.
-        </p>
-        <div className="mt-6 flex items-center space-x-6">
-          <div className="flex items-center space-x-2">
-            <TrendingUp className="w-5 h-5" />
-            <span className="text-sm">98% automation rate</span>
-          </div>
-          <div className="flex items-center space-x-2">
-            <CheckCircle className="w-5 h-5" />
-            <span className="text-sm">All systems operational</span>
+      <div className="bg-gradient-to-r from-[#1e4db7] to-[#4c1d95] rounded-2xl p-8 text-white relative overflow-hidden">
+        <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10"></div>
+        <div className="relative z-10">
+          <h2 className="text-4xl font-bold mb-4">Welcome back, John! 👋</h2>
+          <p className="text-blue-100 text-lg mb-8 max-w-2xl">
+            Experience the next level in workplace management. We help you exceed expectations in every aspect of your work life.
+          </p>
+          <div className="flex flex-wrap gap-8">
+            <div className="flex items-center space-x-3 bg-white/10 rounded-lg px-4 py-2">
+              <Activity className="w-5 h-5" />
+              <span className="text-sm font-medium">98% automation rate</span>
+            </div>
+            <div className="flex items-center space-x-3 bg-white/10 rounded-lg px-4 py-2">
+              <Shield className="w-5 h-5" />
+              <span className="text-sm font-medium">All systems operational</span>
+            </div>
           </div>
         </div>
       </div>
@@ -123,13 +129,15 @@ export function Dashboard({ onSectionChange }: DashboardProps) {
                 }
               }}
             >
-              <Card className="p-6 hover:shadow-lg transition-shadow cursor-pointer">
+              <Card className="p-6 hover:shadow-lg transition-all duration-300 hover:scale-[1.02] cursor-pointer bg-white">
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm font-medium text-gray-600">{stat.label}</p>
                     <p className="text-2xl font-bold text-gray-900 mt-2">{stat.value}</p>
                   </div>
-                  <Icon className={`w-8 h-8 ${stat.color}`} />
+                  <div className={`w-12 h-12 rounded-full flex items-center justify-center ${stat.color} bg-opacity-10`}>
+                    <Icon className={`w-6 h-6 ${stat.color}`} />
+                  </div>
                 </div>
               </Card>
             </Link>
@@ -137,48 +145,14 @@ export function Dashboard({ onSectionChange }: DashboardProps) {
         })}
       </div>
 
-      {/* Recent Activity */}
-      <Card className="p-6">
-        <h3 className="text-lg font-semibold text-gray-900 mb-6">Recent Activity</h3>
-        {isActivitiesLoading ? (
-          <div className="text-center py-8 text-gray-500">Loading activities...</div>
-        ) : recentActivities.length === 0 ? (
-          <div className="text-center py-8 text-gray-500">No recent activities found. Submit your first request!</div>
-        ) : (
-          <div className="space-y-4">
-            {recentActivities.map((activity: any) => (
-              <div
-                key={activity.id}
-                onClick={() => handleActivityClick(activity)}
-                className="flex items-center justify-between p-4 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100 transition-colors"
-              >
-                <div className="flex items-center space-x-3">
-                  <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                  <div>
-                    <p className="font-medium text-gray-900">{activity.title}</p>
-                    <p className="text-sm text-gray-500">{activity.date}</p>
-                  </div>
-                </div>
-                <Badge 
-                  variant={activity.status === 'approved' ? 'default' : 
-                          activity.status === 'confirmed' ? 'default' : 'secondary'}
-                  className={
-                    activity.status === 'approved' ? 'bg-green-100 text-green-800' :
-                    activity.status === 'confirmed' ? 'bg-blue-100 text-blue-800' :
-                    'bg-orange-100 text-orange-800'
-                  }
-                >
-                  {activity.status}
-                </Badge>
-              </div>
-            ))}
-          </div>
-        )}
-      </Card>
-
       {/* Quick Actions */}
-      <Card className="p-6">
-        <h3 className="text-lg font-semibold text-gray-900 mb-6">Quick Actions</h3>
+      <Card className="p-6 bg-white">
+        <div className="flex items-center justify-between mb-6">
+          <h3 className="text-xl font-semibold text-gray-900">Quick Actions</h3>
+          <Button variant="ghost" className="text-sm text-primary hover:text-primary/80">
+            View All <ArrowRight className="ml-1 w-4 h-4" />
+          </Button>
+        </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {quickActions.map((action, index) => (
             <Link
@@ -190,15 +164,60 @@ export function Dashboard({ onSectionChange }: DashboardProps) {
               }}
             >
               <button 
-                className="w-full p-4 border border-gray-200 rounded-lg hover:bg-gray-50 text-left transition-colors"
+                className="w-full p-6 rounded-xl hover:bg-gray-50 text-left transition-all duration-300 border border-gray-100 hover:border-gray-200 hover:shadow-sm"
               >
-                <div className={`${action.color} mb-2`}>{action.emoji}</div>
-                <p className="font-medium">{action.title}</p>
+                <div className="text-2xl mb-3">{action.emoji}</div>
+                <p className="font-semibold text-gray-900 mb-1">{action.title}</p>
                 <p className="text-sm text-gray-500">{action.description}</p>
               </button>
             </Link>
           ))}
         </div>
+      </Card>
+
+      {/* Recent Activity */}
+      <Card className="p-6 bg-white">
+        <div className="flex items-center justify-between mb-6">
+          <h3 className="text-xl font-semibold text-gray-900">Recent Activity</h3>
+          <Button variant="ghost" className="text-sm text-primary hover:text-primary/80">
+            View All <ArrowRight className="ml-1 w-4 h-4" />
+          </Button>
+        </div>
+        {isActivitiesLoading ? (
+          <div className="text-center py-8">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
+          </div>
+        ) : recentActivities.length === 0 ? (
+          <div className="text-center py-8 text-gray-500">No recent activities found. Submit your first request!</div>
+        ) : (
+          <div className="space-y-4">
+            {recentActivities.map((activity: any) => (
+              <div
+                key={activity.id}
+                onClick={() => handleActivityClick(activity)}
+                className="flex items-center justify-between p-4 rounded-xl cursor-pointer hover:bg-gray-50 transition-all duration-300 border border-transparent hover:border-gray-100"
+              >
+                <div className="flex items-center space-x-3">
+                  <div className="w-2 h-2 bg-primary rounded-full"></div>
+                  <div>
+                    <p className="font-medium text-gray-900">{activity.title}</p>
+                    <p className="text-sm text-gray-500">{activity.date}</p>
+                  </div>
+                </div>
+                <Badge 
+                  variant={activity.status === 'approved' ? 'default' : 'secondary'}
+                  className={
+                    activity.status === 'approved' ? 'bg-green-100 text-green-800 hover:bg-green-200' :
+                    activity.status === 'confirmed' ? 'bg-green-100 text-green-800 hover:bg-green-200' :
+                    'bg-orange-100 text-orange-800 hover:bg-orange-200'
+                  }
+                >
+                  {activity.status}
+                </Badge>
+              </div>
+            ))}
+          </div>
+        )}
       </Card>
     </div>
   );

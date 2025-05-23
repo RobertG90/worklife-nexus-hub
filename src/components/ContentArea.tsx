@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Dashboard } from './Dashboard';
 import { SickLeaveSection } from './sections/SickLeaveSection';
@@ -49,8 +48,8 @@ export function ContentArea({ activeSection, onSectionChange }: ContentAreaProps
   };
 
   return (
-    <div className="flex-1 bg-gray-50 p-8 overflow-auto">
-      <div className="max-w-6xl mx-auto">
+    <div className="flex-1 bg-[#f8fafc] min-h-screen overflow-auto">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {renderContent()}
       </div>
     </div>
