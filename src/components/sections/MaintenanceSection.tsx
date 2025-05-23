@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
-import { Wrench, AlertTriangle, MapPin, Camera, Clock } from 'lucide-react';
+import { Wrench, AlertTriangle, Camera } from 'lucide-react';
 
 export function MaintenanceSection() {
   const [issueType, setIssueType] = useState('electrical');
@@ -52,11 +52,11 @@ export function MaintenanceSection() {
                     <button
                       key={type.id}
                       onClick={() => setIssueType(type.id)}
-                      className={`p-3 rounded-lg border text-center transition-colors ${
+                      className={
                         issueType === type.id
-                          ? 'border-orange-500 bg-orange-50 text-orange-700'
-                          : 'border-gray-200 hover:border-gray-300'
-                      }`}
+                          ? 'p-3 rounded-lg border border-orange-500 bg-orange-50 text-orange-700 text-center transition-colors'
+                          : 'p-3 rounded-lg border border-gray-200 hover:border-gray-300 text-center transition-colors'
+                      }
                     >
                       <div className="text-xl mb-1">{type.icon}</div>
                       <div className="text-sm font-medium">{type.label}</div>
@@ -158,19 +158,19 @@ export function MaintenanceSection() {
             <div className="space-y-3 text-sm">
               <div className="flex justify-between">
                 <span className="text-red-600">Emergency</span>
-                <span className="font-medium">< 1 hour</span>
+                <span className="font-medium">&lt; 1 hour</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-orange-600">High Priority</span>
-                <span className="font-medium">< 4 hours</span>
+                <span className="font-medium">&lt; 4 hours</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-yellow-600">Medium Priority</span>
-                <span className="font-medium">< 24 hours</span>
+                <span className="font-medium">&lt; 24 hours</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-green-600">Low Priority</span>
-                <span className="font-medium">< 3 days</span>
+                <span className="font-medium">&lt; 3 days</span>
               </div>
             </div>
           </Card>
