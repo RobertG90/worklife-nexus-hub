@@ -123,6 +123,10 @@ export function SickLeaveDetails({ errorBoundaryTest }: SickLeaveDetailsProps) {
                 </Badge>
               </div>
               <div>
+                <span className="font-medium">Leave Type:</span>{' '}
+                <span className="capitalize">{request.leave_type}</span>
+              </div>
+              <div>
                 <span className="font-medium">Start Date:</span>{' '}
                 <span>{format(startDate, 'MMMM d, yyyy')}</span>
               </div>
@@ -132,31 +136,10 @@ export function SickLeaveDetails({ errorBoundaryTest }: SickLeaveDetailsProps) {
               </div>
               <div>
                 <span className="font-medium">Reason:</span>{' '}
-                <p>{request.reason}</p>
-              </div>
-              <div>
-                <span className="font-medium">Notes:</span>{' '}
-                <p>{request.notes || 'No notes provided'}</p>
+                <p>{request.reason || 'No reason provided'}</p>
               </div>
             </CardContent>
           </Card>
-
-          {request.documents && request.documents.length > 0 && (
-            <Card className="mb-6">
-              <CardHeader>
-                <CardTitle>Documents</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ul className="space-y-2">
-                  {request.documents.map((doc: string, index: number) => (
-                    <li key={index} className="flex items-center">
-                      <span>{doc}</span>
-                    </li>
-                  ))}
-                </ul>
-              </CardContent>
-            </Card>
-          )}
 
           <Card>
             <CardHeader>
@@ -170,7 +153,7 @@ export function SickLeaveDetails({ errorBoundaryTest }: SickLeaveDetailsProps) {
                   </div>
                   <div>
                     <p className="font-medium">Request Submitted</p>
-                    <p className="text-sm text-gray-500">{format(new Date(request.createdAt || ''), 'MMMM d, yyyy')}</p>
+                    <p className="text-sm text-gray-500">{format(new Date(request.created_at), 'MMMM d, yyyy')}</p>
                   </div>
                 </div>
               </div>
