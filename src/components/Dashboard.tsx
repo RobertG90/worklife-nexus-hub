@@ -49,7 +49,7 @@ export function Dashboard({ onSectionChange }: DashboardProps) {
       value: isStatsLoading ? '...' : String(stats?.upcomingBookings || 0), 
       icon: Calendar, 
       color: 'text-purple-600', 
-      section: 'upcoming-trips',
+      section: 'upcoming-trips-calendar',
       isLink: true
     },
   ];

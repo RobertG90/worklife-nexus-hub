@@ -9,6 +9,7 @@ import NotFound from "./pages/NotFound";
 import SickLeaveDetails from "./pages/SickLeaveDetails";
 import TripBookingDetails from "./pages/TripBookingDetails";
 import UpcomingTrips from "./pages/UpcomingTrips";
+import UpcomingTripsCalendar from "./pages/UpcomingTripsCalendar";
 import EventDetails from "./pages/EventDetails";
 import CourseDetails from "./pages/CourseDetails";
 
@@ -26,6 +27,7 @@ const App = () => (
           <Route path="/sick-leave/:id" element={<SickLeaveDetails />} />
           <Route path="/trip-booking/:id" element={<TripBookingDetails />} />
           <Route path="/upcoming-trips" element={<UpcomingTrips />} />
+          <Route path="/upcoming-trips-calendar" element={<UpcomingTripsCalendar />} />
           <Route path="/event/:id" element={<EventDetails />} />
           <Route path="/course/:id" element={<CourseDetails />} />
           <Route path="/education" element={<Index />} />
