@@ -18,7 +18,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
 interface SidebarProps {
   activeSection: string;
@@ -28,13 +28,13 @@ interface SidebarProps {
 }
 
 const menuItems = [
-  { id: 'dashboard', label: 'Dashboard', icon: Home, description: 'Overview of all services' },
-  { id: 'sick-leave', label: 'Sick Leave', icon: Heart, description: 'Submit sick leave requests' },
-  { id: 'education', label: 'Education & Social', icon: GraduationCap, description: 'Learning and team events' },
-  { id: 'travel', label: 'Corporate Travel', icon: Plane, description: 'Business trip arrangements' },
-  { id: 'maintenance', label: 'Maintenance', icon: Wrench, description: 'Report facility issues' },
-  { id: 'booking', label: 'Asset Booking', icon: Calendar, description: 'Reserve company resources' },
-  { id: 'expenses', label: 'Expense Reports', icon: Receipt, description: 'Submit reimbursements' },
+  { id: 'dashboard', label: 'Dashboard', icon: Home, description: 'Overview of all services', path: '/' },
+  { id: 'sick-leave', label: 'Sick Leave', icon: Heart, description: 'Submit sick leave requests', path: '/sick-leave' },
+  { id: 'education', label: 'Education & Social', icon: GraduationCap, description: 'Learning and team events', path: '/education' },
+  { id: 'travel', label: 'Corporate Travel', icon: Plane, description: 'Business trip arrangements', path: '/travel' },
+  { id: 'maintenance', label: 'Maintenance', icon: Wrench, description: 'Report facility issues', path: '/maintenance' },
+  { id: 'booking', label: 'Asset Booking', icon: Calendar, description: 'Reserve company resources', path: '/booking' },
+  { id: 'expenses', label: 'Expense Reports', icon: Receipt, description: 'Submit reimbursements', path: '/expenses' },
 ];
 
 export function Sidebar({ activeSection, onSectionChange, onClose, errorBoundaryTestComponent }: SidebarProps) {
@@ -59,7 +59,6 @@ export function Sidebar({ activeSection, onSectionChange, onClose, errorBoundary
 
   const navigateToProfile = () => {
     navigate('/profile');
-    onSectionChange('profile');
   };
 
   return (
@@ -125,22 +124,23 @@ export function Sidebar({ activeSection, onSectionChange, onClose, errorBoundary
           {menuItems.map((item) => {
             const Icon = item.icon;
             return (
-              <button
+              <Link
                 key={item.id}
-                onClick={() => onSectionChange(item.id)}
+                to={item.path}
                 className={cn(
                   "w-full flex items-center space-x-3 p-3 rounded-lg text-left transition-all duration-200",
                   activeSection === item.id
                     ? "bg-white/10 text-white"
                     : "text-blue-100 hover:bg-white/5 hover:text-white"
                 )}
+                onClick={onClose}
               >
                 <Icon className="w-5 h-5 flex-shrink-0 text-blue-200" />
                 <div className="flex-1">
                   <p className="text-sm font-medium">{item.label}</p>
                   <p className="text-xs mt-0.5 text-blue-200">{item.description}</p>
                 </div>
-              </button>
+              </Link>
             );
           })}
         </div>

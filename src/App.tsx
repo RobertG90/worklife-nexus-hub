@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -15,6 +16,12 @@ import CourseDetails from "./pages/CourseDetails";
 import ExpenseDashboard from "./pages/ExpenseDashboard";
 import ExpenseDetails from "./pages/ExpenseDetails";
 import ProfilePage from "./pages/ProfilePage";
+import SickLeavePage from "./pages/SickLeavePage";
+import EducationPage from "./pages/EducationPage";
+import TravelPage from "./pages/TravelPage";
+import MaintenancePage from "./pages/MaintenancePage";
+import BookingPage from "./pages/BookingPage";
+import ExpensesPage from "./pages/ExpensesPage";
 
 const queryClient = new QueryClient();
 
@@ -27,19 +34,19 @@ const App = () => (
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Index />} />
-            <Route path="/sick-leave" element={<Index />} />
+            <Route path="/sick-leave" element={<SickLeavePage />} />
             <Route path="/sick-leave/:id" element={<SickLeaveDetails />} />
+            <Route path="/education" element={<EducationPage />} />
+            <Route path="/travel" element={<TravelPage />} />
+            <Route path="/maintenance" element={<MaintenancePage />} />
+            <Route path="/booking" element={<BookingPage />} />
+            <Route path="/expenses" element={<ExpensesPage />} />
+            <Route path="/profile" element={<ProfilePage />} />
             <Route path="/trip-booking/:id" element={<TripBookingDetails />} />
             <Route path="/upcoming-trips" element={<UpcomingTrips />} />
             <Route path="/upcoming-trips-calendar" element={<UpcomingTripsCalendar />} />
             <Route path="/event/:id" element={<EventDetails />} />
             <Route path="/course/:id" element={<CourseDetails />} />
-            <Route path="/education" element={<Index />} />
-            <Route path="/travel" element={<Index />} />
-            <Route path="/maintenance" element={<Index />} />
-            <Route path="/booking" element={<Index />} />
-            <Route path="/expenses" element={<Index />} />
-            <Route path="/profile" element={<ProfilePage />} />
             <Route path="/expense-dashboard" element={<ExpenseDashboard />} />
             <Route path="/expense/:id" element={<ExpenseDetails />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
