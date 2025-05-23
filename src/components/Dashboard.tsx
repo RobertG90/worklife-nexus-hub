@@ -101,22 +101,22 @@ export function Dashboard({ onSectionChange }: DashboardProps) {
   };
 
   return (
-    <div className="space-y-5 sm:space-y-6 md:space-y-8">
-      {/* Welcome Section - Made smaller */}
-      <div className="bg-gradient-to-r from-[#1e4db7] to-[#4c1d95] rounded-lg md:rounded-xl p-3 md:p-4 text-white relative overflow-hidden">
+    <div className="space-y-4 sm:space-y-5 md:space-y-6">
+      {/* Welcome Section - Smaller size */}
+      <div className="bg-gradient-to-r from-[#1e4db7] to-[#4c1d95] rounded-lg p-3 md:p-4 text-white relative overflow-hidden">
         <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10"></div>
         <div className="relative z-10">
-          <h2 className="text-lg sm:text-xl md:text-2xl font-bold mb-1 md:mb-2">Welcome back, John! 👋</h2>
-          <p className="text-blue-100 text-xs md:text-sm mb-2 md:mb-4 max-w-xl">
+          <h2 className="text-base sm:text-lg md:text-xl font-bold mb-1">Welcome back, John! 👋</h2>
+          <p className="text-blue-100 text-xs sm:text-sm mb-2 max-w-lg">
             Experience the next level in workplace management. We help you exceed expectations in every aspect of your work life.
           </p>
-          <div className="flex flex-col sm:flex-row gap-2 sm:gap-4">
-            <div className="flex items-center space-x-2 bg-white/10 rounded-lg px-3 py-1">
-              <Activity className="w-3 h-3 sm:w-4 sm:h-4" />
+          <div className="flex flex-col sm:flex-row gap-2">
+            <div className="flex items-center space-x-2 bg-white/10 rounded-lg px-2 py-1">
+              <Activity className="w-3 h-3" />
               <span className="text-xs font-medium">98% automation rate</span>
             </div>
-            <div className="flex items-center space-x-2 bg-white/10 rounded-lg px-3 py-1">
-              <Shield className="w-3 h-3 sm:w-4 sm:h-4" />
+            <div className="flex items-center space-x-2 bg-white/10 rounded-lg px-2 py-1">
+              <Shield className="w-3 h-3" />
               <span className="text-xs font-medium">All systems operational</span>
             </div>
           </div>

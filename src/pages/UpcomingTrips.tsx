@@ -1,124 +1,70 @@
-
 import React from 'react';
-import { Card } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { useTripBookings } from '@/hooks/useTripBookings';
-import { useNavigate } from 'react-router-dom';
-import { Plane, ArrowLeft } from 'lucide-react';
+import { NavigationButtons } from '@/components/NavigationButtons';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { TripBooking } from '@/hooks/useTripBookings';
+import { Calendar } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
-const UpcomingTrips = () => {
-  const { bookings, isLoading } = useTripBookings();
-  const navigate = useNavigate();
+export default function UpcomingTrips() {
+  const { data: upcomingTrips, isLoading, error } = useQuery({
+    queryKey: ['upcoming-trips'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('trip_bookings')
+        .select('*')
+        .gte('departure_date', new Date().toISOString().split('T')[0])
+        .order('departure_date', { ascending: true });
 
-  // Filter for only upcoming trips (where departure date is today or in the future)
-  const upcomingTrips = bookings.filter(booking => {
-    const departureDate = new Date(booking.departure_date);
-    const today = new Date();
-    today.setHours(0, 0, 0, 0); // Reset time to start of day for comparison
-    return departureDate >= today;
+      if (error) {
+        throw new Error(error.message);
+      }
+
+      return data as TripBooking[];
+    },
   });
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'approved':
-      case 'confirmed':
-        return 'bg-green-100 text-green-800';
-      case 'rejected':
-        return 'bg-red-100 text-red-800';
-      default:
-        return 'bg-orange-100 text-orange-800';
-    }
-  };
+  if (isLoading) {
+    return <div className="text-center py-6">Loading upcoming trips...</div>;
+  }
 
-  const handleViewTripDetails = (bookingId: string) => {
-    navigate(`/trip-booking/${bookingId}`);
-  };
-
-  const handleBackToDashboard = () => {
-    navigate('/');
-  };
+  if (error) {
+    return <div className="text-center py-6 text-red-500">Error: {error.message}</div>;
+  }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-8">
-      <div className="max-w-6xl mx-auto space-y-8">
-        {/* Header */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-4">
-            <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-              <Plane className="w-6 h-6 text-blue-600" />
-            </div>
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">Upcoming Trips</h1>
-              <p className="text-gray-600">View and manage your upcoming business trips</p>
-            </div>
+    <div className="min-h-screen bg-gray-50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Upcoming Trips</h1>
+            <p className="text-gray-600 mt-1">View and manage your upcoming business trips</p>
           </div>
-          <Button 
-            variant="outline" 
-            onClick={handleBackToDashboard}
-            className="flex items-center space-x-2"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            <span>Back to Dashboard</span>
-          </Button>
+          <NavigationButtons />
         </div>
-
-        {/* Trips Table */}
-        <Card className="p-6">
-          {isLoading ? (
-            <div className="text-center py-8 text-gray-500">Loading trips...</div>
-          ) : upcomingTrips.length === 0 ? (
-            <div className="text-center py-8 text-gray-500">No upcoming trips found. Book your first trip!</div>
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b border-gray-200">
-                    <th className="text-left py-3 px-4 font-medium text-gray-700">Destination</th>
-                    <th className="text-left py-3 px-4 font-medium text-gray-700">From</th>
-                    <th className="text-left py-3 px-4 font-medium text-gray-700">Departure</th>
-                    <th className="text-left py-3 px-4 font-medium text-gray-700">Return</th>
-                    <th className="text-left py-3 px-4 font-medium text-gray-700">Purpose</th>
-                    <th className="text-left py-3 px-4 font-medium text-gray-700">Status</th>
-                    <th className="text-left py-3 px-4 font-medium text-gray-700">Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {upcomingTrips.map((booking) => (
-                    <tr key={booking.id} className="border-b border-gray-100">
-                      <td className="py-3 px-4 text-gray-900">{booking.to_location}</td>
-                      <td className="py-3 px-4 text-gray-600">{booking.from_location}</td>
-                      <td className="py-3 px-4 text-gray-600">
-                        {new Date(booking.departure_date).toLocaleDateString()}
-                      </td>
-                      <td className="py-3 px-4 text-gray-600">
-                        {new Date(booking.return_date).toLocaleDateString()}
-                      </td>
-                      <td className="py-3 px-4 text-gray-600">{booking.purpose}</td>
-                      <td className="py-3 px-4">
-                        <Badge className={getStatusColor(booking.status)}>
-                          {booking.status}
-                        </Badge>
-                      </td>
-                      <td className="py-3 px-4">
-                        <Button 
-                          size="sm" 
-                          variant="outline"
-                          onClick={() => handleViewTripDetails(booking.id)}
-                        >
-                          View Details
-                        </Button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </Card>
+        
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {upcomingTrips?.map((trip) => (
+            <Link key={trip.id} to={`/trip-booking/${trip.id}`}>
+              <Card className="hover:shadow-md transition-shadow duration-200">
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <Calendar className="mr-2 h-4 w-4" />
+                    {trip.to_location}
+                  </CardTitle>
+                  <CardDescription>
+                    {new Date(trip.departure_date).toLocaleDateString()} - {new Date(trip.return_date).toLocaleDateString()}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-gray-500">Status: {trip.status}</p>
+                </CardContent>
+              </Card>
+            </Link>
+          ))}
+        </div>
       </div>
     </div>
   );
-};
-
-export default UpcomingTrips;
+}

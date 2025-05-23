@@ -1,173 +1,104 @@
-import React, { useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, Calendar, Users, MapPin } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
-import { events } from '@/data/educationData';
+import React from 'react';
+import { useParams } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { NavigationButtons } from '@/components/NavigationButtons';
 
-const EventDetails = () => {
-  const { id } = useParams();
-  const navigate = useNavigate();
-  const { toast } = useToast();
-  const [email, setEmail] = useState('');
-  const [isEnrolling, setIsEnrolling] = useState(false);
+interface Event {
+  id: string;
+  title: string;
+  description: string;
+  date: string;
+  location: string;
+}
 
-  const event = events.find(e => e.id === id);
+export default function EventDetails() {
+  const { id } = useParams<{ id: string }>();
 
-  if (!event) {
-    return (
-      <div className="min-h-screen bg-gray-50 p-4 sm:p-8">
-        <div className="max-w-4xl mx-auto">
-          <div className="text-center py-8">
-            <h1 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4">Event Not Found</h1>
-            <Button onClick={() => navigate('/education')} size="sm">
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Back to Education
-            </Button>
-          </div>
-        </div>
-      </div>
-    );
+  const { data: event, isLoading, isError } = useQuery<Event, Error>({
+    queryKey: ['event', id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('events')
+        .select('*')
+        .eq('id', id)
+        .single();
+
+      if (error) {
+        throw new Error(error.message);
+      }
+
+      return data as Event;
+    },
+    enabled: !!id,
+  });
+
+  if (isLoading) {
+    return <div>Loading event details...</div>;
   }
 
-  const handleEnroll = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!email) {
-      toast({
-        title: "Email Required",
-        description: "Please enter your email address to enroll.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    setIsEnrolling(true);
-    
-    // Simulate API call
-    setTimeout(() => {
-      toast({
-        title: "Enrollment Successful!",
-        description: `You've been enrolled in ${event.title}. Check your email for confirmation.`,
-      });
-      setIsEnrolling(false);
-      setEmail('');
-    }, 1000);
-  };
-
-  const getTypeColor = (type: string) => {
-    switch (type) {
-      case 'Team Building':
-        return 'bg-blue-100 text-blue-800';
-      case 'Learning':
-        return 'bg-green-100 text-green-800';
-      case 'Social':
-        return 'bg-purple-100 text-purple-800';
-      default:
-        return 'bg-gray-100 text-gray-800';
-    }
-  };
+  if (isError) {
+    return <div>Error loading event details.</div>;
+  }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4 sm:p-8">
-      <div className="max-w-4xl mx-auto space-y-6 sm:space-y-8">
-        {/* Header */}
-        <div className="flex items-center justify-between">
-          <Button 
-            variant="outline" 
-            onClick={() => navigate('/education')}
-            className="flex items-center space-x-2"
-            size="sm"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            <span className="hidden sm:inline">Back to Education</span>
-            <span className="sm:hidden">Back</span>
-          </Button>
-        </div>
-
-        {/* Event Details */}
-        <Card className="p-4 sm:p-6 lg:p-8">
-          <div className="space-y-6">
-            {/* Event Header */}
-            <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
-              <div className="flex-1">
-                <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">{event.title}</h1>
-                <Badge className={getTypeColor(event.type)}>{event.type}</Badge>
-              </div>
-              <div className="text-left lg:text-right">
-                <div className="text-xl sm:text-2xl font-bold text-gray-900">
-                  {event.participants}/{event.maxParticipants}
-                </div>
-                <div className="text-sm text-gray-600">participants</div>
-              </div>
-            </div>
-
-            {/* Event Info */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-              <div className="flex items-center space-x-3">
-                <Calendar className="w-5 h-5 text-gray-400 flex-shrink-0" />
-                <div>
-                  <div className="font-medium text-gray-900 text-sm sm:text-base">Date</div>
-                  <div className="text-gray-600 text-sm">{new Date(event.date).toLocaleDateString()}</div>
-                </div>
-              </div>
-              <div className="flex items-center space-x-3">
-                <MapPin className="w-5 h-5 text-gray-400 flex-shrink-0" />
-                <div>
-                  <div className="font-medium text-gray-900 text-sm sm:text-base">Location</div>
-                  <div className="text-gray-600 text-sm">{event.location}</div>
-                </div>
-              </div>
-              <div className="flex items-center space-x-3">
-                <Users className="w-5 h-5 text-gray-400 flex-shrink-0" />
-                <div>
-                  <div className="font-medium text-gray-900 text-sm sm:text-base">Duration</div>
-                  <div className="text-gray-600 text-sm">{event.duration}</div>
-                </div>
-              </div>
-            </div>
-
-            {/* Description */}
-            <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-3">About this Event</h3>
-              <p className="text-gray-600 leading-relaxed text-sm sm:text-base">{event.description}</p>
-            </div>
-
-            {/* Enrollment Form */}
-            <div className="border-t pt-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Enroll in this Event</h3>
-              <form onSubmit={handleEnroll} className="space-y-4">
-                <div>
-                  <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                    Email Address
-                  </label>
-                  <Input
-                    id="email"
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="Enter your email address"
-                    required
-                    className="w-full sm:max-w-md"
-                  />
-                </div>
-                <Button 
-                  type="submit" 
-                  disabled={isEnrolling || event.participants >= event.maxParticipants}
-                  className="w-full sm:w-auto"
-                  size="sm"
-                >
-                  {isEnrolling ? 'Enrolling...' : event.participants >= event.maxParticipants ? 'Event Full' : 'Enroll Now'}
-                </Button>
-              </form>
-            </div>
+    <div className="min-h-screen bg-gray-50">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">{event?.title}</h1>
+            <p className="text-gray-600 mt-1">Event Details</p>
           </div>
-        </Card>
+          <NavigationButtons />
+        </div>
+        
+        <div className="bg-white shadow overflow-hidden sm:rounded-lg">
+          <div className="px-4 py-5 sm:px-6">
+            <h3 className="text-lg font-medium leading-6 text-gray-900">
+              Event Information
+            </h3>
+            <p className="mt-1 max-w-2xl text-sm text-gray-500">
+              Details about this event.
+            </p>
+          </div>
+          <div className="border-t border-gray-200">
+            <dl>
+              <div className="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                <dt className="text-sm font-medium text-gray-500">
+                  Title
+                </dt>
+                <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                  {event?.title}
+                </dd>
+              </div>
+              <div className="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                <dt className="text-sm font-medium text-gray-500">
+                  Description
+                </dt>
+                <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                  {event?.description}
+                </dd>
+              </div>
+              <div className="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                <dt className="text-sm font-medium text-gray-500">
+                  Date
+                </dt>
+                <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                  {event?.date}
+                </dd>
+              </div>
+              <div className="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                <dt className="text-sm font-medium text-gray-500">
+                  Location
+                </dt>
+                <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                  {event?.location}
+                </dd>
+              </div>
+            </dl>
+          </div>
+        </div>
       </div>
     </div>
   );
-};
-
-export default EventDetails;
+}
