@@ -5,15 +5,46 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
-import { Plane, MapPin, Calendar, Clock, DollarSign } from 'lucide-react';
+import { 
+  Plane, 
+  MapPin, 
+  Calendar, 
+  Clock, 
+  DollarSign,
+  Receipt,
+  Plus,
+  Eye
+} from 'lucide-react';
+import { TravelExpenseForm } from '@/components/forms/TravelExpenseForm';
+import { useTravelExpenses } from '@/hooks/useTravelExpenses';
 
 export function TravelSection() {
   const [tripType, setTripType] = useState('domestic');
+  const [activeTab, setActiveTab] = useState('book-trip');
+  const { expenses, isLoading } = useTravelExpenses();
 
   const upcomingTrips = [
     { id: 1, destination: 'New York', date: '2024-02-15', status: 'confirmed', purpose: 'Client Meeting' },
     { id: 2, destination: 'London', date: '2024-03-10', status: 'pending', purpose: 'Conference' },
   ];
+
+  const formatCurrency = (amount: number, currency: string) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: currency,
+    }).format(amount);
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'approved':
+        return 'bg-green-100 text-green-800';
+      case 'rejected':
+        return 'bg-red-100 text-red-800';
+      default:
+        return 'bg-orange-100 text-orange-800';
+    }
+  };
 
   return (
     <div className="space-y-8">
@@ -24,199 +55,297 @@ export function TravelSection() {
         </div>
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Corporate Travel</h1>
-          <p className="text-gray-600">Arrange your business trips with ease and efficiency!</p>
+          <p className="text-gray-600">Arrange your business trips and manage expenses!</p>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* New Travel Request */}
-        <div className="lg:col-span-2">
-          <Card className="p-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-6">Request New Business Trip</h2>
-            
-            <div className="space-y-6">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Trip Type</label>
-                <div className="grid grid-cols-2 gap-3">
-                  {['domestic', 'international'].map((type) => (
-                    <button
-                      key={type}
-                      onClick={() => setTripType(type)}
-                      className={`p-3 rounded-lg border text-center capitalize transition-colors ${
-                        tripType === type
-                          ? 'border-blue-500 bg-blue-50 text-blue-700'
-                          : 'border-gray-200 hover:border-gray-300'
-                      }`}
-                    >
-                      {type}
-                    </button>
-                  ))}
-                </div>
-              </div>
+      {/* Tab Navigation */}
+      <div className="border-b border-gray-200">
+        <nav className="flex space-x-8">
+          <button
+            onClick={() => setActiveTab('book-trip')}
+            className={`py-2 px-1 border-b-2 font-medium text-sm ${
+              activeTab === 'book-trip'
+                ? 'border-blue-500 text-blue-600'
+                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+            }`}
+          >
+            <Plane className="w-4 h-4 inline mr-2" />
+            Book Trip
+          </button>
+          <button
+            onClick={() => setActiveTab('expenses')}
+            className={`py-2 px-1 border-b-2 font-medium text-sm ${
+              activeTab === 'expenses'
+                ? 'border-blue-500 text-blue-600'
+                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+            }`}
+          >
+            <Receipt className="w-4 h-4 inline mr-2" />
+            Travel Expenses
+          </button>
+        </nav>
+      </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      {activeTab === 'book-trip' && (
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* New Travel Request */}
+          <div className="lg:col-span-2">
+            <Card className="p-6">
+              <h2 className="text-xl font-semibold text-gray-900 mb-6">Request New Business Trip</h2>
+              
+              <div className="space-y-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">From</label>
-                  <Input placeholder="Departure city" />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">To</label>
-                  <Input placeholder="Destination city" />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Departure Date</label>
-                  <Input type="date" />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Return Date</label>
-                  <Input type="date" />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Purpose of Travel</label>
-                <Textarea placeholder="Meeting details, conference name, etc." className="h-24" />
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Preferred Departure Time</label>
-                  <select className="w-full p-2 border border-gray-300 rounded-md">
-                    <option>Morning (6AM - 12PM)</option>
-                    <option>Afternoon (12PM - 6PM)</option>
-                    <option>Evening (6PM - 12AM)</option>
-                    <option>No preference</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Accommodation</label>
-                  <select className="w-full p-2 border border-gray-300 rounded-md">
-                    <option>Hotel required</option>
-                    <option>No accommodation needed</option>
-                    <option>Extended stay</option>
-                  </select>
-                </div>
-              </div>
-
-              <div className="bg-green-50 p-4 rounded-lg">
-                <div className="flex items-start space-x-3">
-                  <div className="text-green-500">🚀</div>
-                  <div>
-                    <h4 className="font-medium text-green-900">Smart Booking Engine</h4>
-                    <p className="text-sm text-green-700 mt-1">
-                      Our AI will find the best flights and hotels within your budget, 
-                      automatically applying company policies and preferred vendors.
-                    </p>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Trip Type</label>
+                  <div className="grid grid-cols-2 gap-3">
+                    {['domestic', 'international'].map((type) => (
+                      <button
+                        key={type}
+                        onClick={() => setTripType(type)}
+                        className={`p-3 rounded-lg border text-center capitalize transition-colors ${
+                          tripType === type
+                            ? 'border-blue-500 bg-blue-50 text-blue-700'
+                            : 'border-gray-200 hover:border-gray-300'
+                        }`}
+                      >
+                        {type}
+                      </button>
+                    ))}
                   </div>
                 </div>
-              </div>
 
-              <Button className="w-full bg-blue-600 hover:bg-blue-700">
-                Submit Travel Request
-              </Button>
-            </div>
-          </Card>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">From</label>
+                    <Input placeholder="Departure city" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">To</label>
+                    <Input placeholder="Destination city" />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Departure Date</label>
+                    <Input type="date" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Return Date</label>
+                    <Input type="date" />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Purpose of Travel</label>
+                  <Textarea placeholder="Meeting details, conference name, etc." className="h-24" />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Preferred Departure Time</label>
+                    <select className="w-full p-2 border border-gray-300 rounded-md">
+                      <option>Morning (6AM - 12PM)</option>
+                      <option>Afternoon (12PM - 6PM)</option>
+                      <option>Evening (6PM - 12AM)</option>
+                      <option>No preference</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Accommodation</label>
+                    <select className="w-full p-2 border border-gray-300 rounded-md">
+                      <option>Hotel required</option>
+                      <option>No accommodation needed</option>
+                      <option>Extended stay</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="bg-green-50 p-4 rounded-lg">
+                  <div className="flex items-start space-x-3">
+                    <div className="text-green-500">🚀</div>
+                    <div>
+                      <h4 className="font-medium text-green-900">Smart Booking Engine</h4>
+                      <p className="text-sm text-green-700 mt-1">
+                        Our AI will find the best flights and hotels within your budget, 
+                        automatically applying company policies and preferred vendors.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <Button className="w-full bg-blue-600 hover:bg-blue-700">
+                  Submit Travel Request
+                </Button>
+              </div>
+            </Card>
+          </div>
+
+          {/* Sidebar */}
+          <div className="space-y-6">
+            {/* Travel Policy */}
+            <Card className="p-6">
+              <h3 className="font-semibold text-gray-900 mb-4">Travel Guidelines</h3>
+              <div className="space-y-3 text-sm text-gray-600">
+                <div className="flex items-start space-x-2">
+                  <DollarSign className="w-4 h-4 text-gray-400 mt-0.5 flex-shrink-0" />
+                  <span>Economy class for flights under 4 hours</span>
+                </div>
+                <div className="flex items-start space-x-2">
+                  <Clock className="w-4 h-4 text-gray-400 mt-0.5 flex-shrink-0" />
+                  <span>Book at least 2 weeks in advance</span>
+                </div>
+                <div className="flex items-start space-x-2">
+                  <MapPin className="w-4 h-4 text-gray-400 mt-0.5 flex-shrink-0" />
+                  <span>Stay within 5km of meeting location</span>
+                </div>
+              </div>
+            </Card>
+
+            {/* Budget Tracker */}
+            <Card className="p-6">
+              <h3 className="font-semibold text-gray-900 mb-4">Travel Budget</h3>
+              <div className="space-y-3">
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-600">Annual Budget</span>
+                  <span className="font-semibold">$8,000</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-600">Used This Year</span>
+                  <span className="text-gray-900">$3,200</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-600">Remaining</span>
+                  <Badge className="bg-green-100 text-green-800">$4,800</Badge>
+                </div>
+                <div className="w-full bg-gray-200 rounded-full h-2 mt-3">
+                  <div className="bg-blue-600 h-2 rounded-full" style={{ width: '40%' }}></div>
+                </div>
+              </div>
+            </Card>
+          </div>
         </div>
+      )}
 
-        {/* Sidebar */}
-        <div className="space-y-6">
-          {/* Travel Policy */}
-          <Card className="p-6">
-            <h3 className="font-semibold text-gray-900 mb-4">Travel Guidelines</h3>
-            <div className="space-y-3 text-sm text-gray-600">
-              <div className="flex items-start space-x-2">
-                <DollarSign className="w-4 h-4 text-gray-400 mt-0.5 flex-shrink-0" />
-                <span>Economy class for flights under 4 hours</span>
-              </div>
-              <div className="flex items-start space-x-2">
-                <Clock className="w-4 h-4 text-gray-400 mt-0.5 flex-shrink-0" />
-                <span>Book at least 2 weeks in advance</span>
-              </div>
-              <div className="flex items-start space-x-2">
-                <MapPin className="w-4 h-4 text-gray-400 mt-0.5 flex-shrink-0" />
-                <span>Stay within 5km of meeting location</span>
-              </div>
-            </div>
-          </Card>
+      {activeTab === 'expenses' && (
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Expense Form */}
+          <div className="lg:col-span-2">
+            <TravelExpenseForm />
+          </div>
 
-          {/* Budget Tracker */}
-          <Card className="p-6">
-            <h3 className="font-semibold text-gray-900 mb-4">Travel Budget</h3>
-            <div className="space-y-3">
-              <div className="flex justify-between items-center">
-                <span className="text-gray-600">Annual Budget</span>
-                <span className="font-semibold">$8,000</span>
+          {/* Quick Stats */}
+          <div className="space-y-6">
+            <Card className="p-6">
+              <h3 className="font-semibold text-gray-900 mb-4">Expense Summary</h3>
+              <div className="space-y-3">
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-600">Total Expenses</span>
+                  <span className="font-semibold">{expenses.length}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-600">Pending</span>
+                  <Badge className="bg-orange-100 text-orange-800">
+                    {expenses.filter(e => e.status === 'pending').length}
+                  </Badge>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-600">Approved</span>
+                  <Badge className="bg-green-100 text-green-800">
+                    {expenses.filter(e => e.status === 'approved').length}
+                  </Badge>
+                </div>
               </div>
-              <div className="flex justify-between items-center">
-                <span className="text-gray-600">Used This Year</span>
-                <span className="text-gray-900">$3,200</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-gray-600">Remaining</span>
-                <Badge className="bg-green-100 text-green-800">$4,800</Badge>
-              </div>
-              <div className="w-full bg-gray-200 rounded-full h-2 mt-3">
-                <div className="bg-blue-600 h-2 rounded-full" style={{ width: '40%' }}></div>
-              </div>
-            </div>
-          </Card>
-
-          {/* Quick Actions */}
-          <Card className="p-6">
-            <h3 className="font-semibold text-gray-900 mb-4">Quick Actions</h3>
-            <div className="space-y-3">
-              <Button variant="outline" className="w-full justify-start">
-                <Calendar className="w-4 h-4 mr-2" />
-                View Travel Calendar
-              </Button>
-              <Button variant="outline" className="w-full justify-start">
-                <MapPin className="w-4 h-4 mr-2" />
-                Track Current Trip
-              </Button>
-            </div>
-          </Card>
+            </Card>
+          </div>
         </div>
-      </div>
+      )}
 
-      {/* Upcoming Trips */}
-      <Card className="p-6">
-        <h2 className="text-xl font-semibold text-gray-900 mb-6">Upcoming Trips</h2>
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead>
-              <tr className="border-b border-gray-200">
-                <th className="text-left py-3 px-4 font-medium text-gray-700">Destination</th>
-                <th className="text-left py-3 px-4 font-medium text-gray-700">Date</th>
-                <th className="text-left py-3 px-4 font-medium text-gray-700">Purpose</th>
-                <th className="text-left py-3 px-4 font-medium text-gray-700">Status</th>
-                <th className="text-left py-3 px-4 font-medium text-gray-700">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {upcomingTrips.map((trip) => (
-                <tr key={trip.id} className="border-b border-gray-100">
-                  <td className="py-3 px-4 text-gray-900">{trip.destination}</td>
-                  <td className="py-3 px-4 text-gray-600">{trip.date}</td>
-                  <td className="py-3 px-4 text-gray-600">{trip.purpose}</td>
-                  <td className="py-3 px-4">
-                    <Badge 
-                      className={trip.status === 'confirmed' ? 'bg-green-100 text-green-800' : 'bg-orange-100 text-orange-800'}
-                    >
-                      {trip.status}
-                    </Badge>
-                  </td>
-                  <td className="py-3 px-4">
-                    <Button size="sm" variant="outline">View Details</Button>
-                  </td>
+      {/* Expense Table */}
+      {activeTab === 'expenses' && (
+        <Card className="p-6">
+          <h2 className="text-xl font-semibold text-gray-900 mb-6">Travel Expenses</h2>
+          {isLoading ? (
+            <div className="text-center py-8 text-gray-500">Loading expenses...</div>
+          ) : expenses.length === 0 ? (
+            <div className="text-center py-8 text-gray-500">No travel expenses found. Submit your first expense!</div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-gray-200">
+                    <th className="text-left py-3 px-4 font-medium text-gray-700">Destination</th>
+                    <th className="text-left py-3 px-4 font-medium text-gray-700">Purpose</th>
+                    <th className="text-left py-3 px-4 font-medium text-gray-700">Type</th>
+                    <th className="text-left py-3 px-4 font-medium text-gray-700">Amount</th>
+                    <th className="text-left py-3 px-4 font-medium text-gray-700">Date</th>
+                    <th className="text-left py-3 px-4 font-medium text-gray-700">Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {expenses.map((expense) => (
+                    <tr key={expense.id} className="border-b border-gray-100">
+                      <td className="py-3 px-4 text-gray-900">{expense.trip_destination}</td>
+                      <td className="py-3 px-4 text-gray-600">{expense.trip_purpose}</td>
+                      <td className="py-3 px-4 text-gray-600 capitalize">{expense.expense_type}</td>
+                      <td className="py-3 px-4 text-gray-900 font-medium">
+                        {formatCurrency(expense.amount, expense.currency)}
+                      </td>
+                      <td className="py-3 px-4 text-gray-600">
+                        {new Date(expense.start_date).toLocaleDateString()}
+                      </td>
+                      <td className="py-3 px-4">
+                        <Badge className={getStatusColor(expense.status)}>
+                          {expense.status}
+                        </Badge>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </Card>
+      )}
+
+      {/* Upcoming Trips - only show on book-trip tab */}
+      {activeTab === 'book-trip' && (
+        <Card className="p-6">
+          <h2 className="text-xl font-semibold text-gray-900 mb-6">Upcoming Trips</h2>
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr className="border-b border-gray-200">
+                  <th className="text-left py-3 px-4 font-medium text-gray-700">Destination</th>
+                  <th className="text-left py-3 px-4 font-medium text-gray-700">Date</th>
+                  <th className="text-left py-3 px-4 font-medium text-gray-700">Purpose</th>
+                  <th className="text-left py-3 px-4 font-medium text-gray-700">Status</th>
+                  <th className="text-left py-3 px-4 font-medium text-gray-700">Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </Card>
+              </thead>
+              <tbody>
+                {upcomingTrips.map((trip) => (
+                  <tr key={trip.id} className="border-b border-gray-100">
+                    <td className="py-3 px-4 text-gray-900">{trip.destination}</td>
+                    <td className="py-3 px-4 text-gray-600">{trip.date}</td>
+                    <td className="py-3 px-4 text-gray-600">{trip.purpose}</td>
+                    <td className="py-3 px-4">
+                      <Badge 
+                        className={trip.status === 'confirmed' ? 'bg-green-100 text-green-800' : 'bg-orange-100 text-orange-800'}
+                      >
+                        {trip.status}
+                      </Badge>
+                    </td>
+                    <td className="py-3 px-4">
+                      <Button size="sm" variant="outline">View Details</Button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </Card>
+      )}
     </div>
   );
 }

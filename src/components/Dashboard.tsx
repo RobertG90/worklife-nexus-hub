@@ -39,10 +39,10 @@ export function Dashboard({ onSectionChange }: DashboardProps) {
     },
     { 
       label: 'This Month Expenses', 
-      value: '$0', // No expenses data in database yet
+      value: isStatsLoading ? '...' : `$${stats?.monthlyExpenses?.toFixed(2) || '0.00'}`, 
       icon: DollarSign, 
       color: 'text-blue-600', 
-      section: 'expenses' 
+      section: 'travel' 
     },
     { 
       label: 'Upcoming Bookings', 
