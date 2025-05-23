@@ -63,6 +63,7 @@ export function Sidebar({ activeSection, onSectionChange, onClose, errorBoundary
                 <button 
                   onClick={handleProfileClick}
                   className="font-bold text-base hover:text-blue-200 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-opacity-50 rounded-sm"
+                  aria-label="View profile"
                 >
                   John Doe
                 </button>

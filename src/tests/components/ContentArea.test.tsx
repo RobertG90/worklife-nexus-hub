@@ -146,4 +146,4 @@ describe('ContentArea Component', () => {
     await user.keyboard('[Tab]');
     expect(document.activeElement).not.toBe(firstButton);
   });
-}); 
+});
