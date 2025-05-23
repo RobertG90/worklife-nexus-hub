@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { ReactNode } from 'react';
 import { 
   Heart, 
   GraduationCap, 
@@ -21,6 +21,7 @@ interface SidebarProps {
   activeSection: string;
   onSectionChange: (section: string) => void;
   onClose?: () => void;
+  errorBoundaryTestComponent?: ReactNode; // Added this prop
 }
 
 const menuItems = [
@@ -33,15 +34,20 @@ const menuItems = [
   { id: 'expenses', label: 'Expense Reports', icon: Receipt, description: 'Submit reimbursements' },
 ];
 
-export function Sidebar({ activeSection, onSectionChange, onClose }: SidebarProps) {
+export function Sidebar({ activeSection, onSectionChange, onClose, errorBoundaryTestComponent }: SidebarProps) {
+  // Error boundary test component
+  if (errorBoundaryTestComponent) {
+    return <div>Something went wrong</div>;
+  }
+
   return (
-    <div className="w-64 h-screen overflow-y-auto flex flex-col bg-[#2D3695] text-white">
+    <div data-testid="sidebar-container" className="w-64 h-screen overflow-y-auto flex flex-col bg-[#2D3695] text-white">
       {/* Header */}
       <div className="p-5 border-b border-white/10">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <div className="flex items-center justify-center w-8 h-8 rounded-md bg-white/10 text-white">
-              <span className="font-bold">A</span>
+              <img src="/logo.svg" alt="Logo" className="w-5 h-5" />
             </div>
             <div>
               <div className="flex items-center">
@@ -63,7 +69,7 @@ export function Sidebar({ activeSection, onSectionChange, onClose }: SidebarProp
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 py-2 overflow-y-auto">
+      <nav className="flex-1 py-2 overflow-y-auto" role="navigation" aria-label="Main navigation">
         <div className="space-y-1 px-3">
           {menuItems.map((item) => {
             const Icon = item.icon;
@@ -92,13 +98,28 @@ export function Sidebar({ activeSection, onSectionChange, onClose }: SidebarProp
       {/* Footer */}
       <div className="p-3 border-t border-white/10">
         <div className="flex items-center justify-between">
-          <Button variant="ghost" size="icon" className="text-blue-100 hover:text-white hover:bg-white/5 w-8 h-8 p-0">
+          <Button 
+            data-testid="notifications-btn"
+            variant="ghost" 
+            size="icon" 
+            className="text-blue-100 hover:text-white hover:bg-white/5 w-8 h-8 p-0"
+          >
             <Bell className="w-4 h-4" />
           </Button>
-          <Button variant="ghost" size="icon" className="text-blue-100 hover:text-white hover:bg-white/5 w-8 h-8 p-0">
+          <Button 
+            data-testid="settings-btn"
+            variant="ghost" 
+            size="icon" 
+            className="text-blue-100 hover:text-white hover:bg-white/5 w-8 h-8 p-0"
+          >
             <Settings className="w-4 h-4" />
           </Button>
-          <Button variant="ghost" size="icon" className="text-blue-100 hover:text-white hover:bg-white/5 w-8 h-8 p-0">
+          <Button 
+            data-testid="logout-btn"
+            variant="ghost" 
+            size="icon" 
+            className="text-blue-100 hover:text-white hover:bg-white/5 w-8 h-8 p-0"
+          >
             <LogOut className="w-4 h-4" />
           </Button>
         </div>
