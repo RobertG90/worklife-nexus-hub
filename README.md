@@ -80,6 +80,86 @@ graph TD
     style API fill:#bfb,stroke:#333,stroke-width:2px
 ```
 
+### Service Connections & Tools
+
+```mermaid
+graph LR
+    subgraph "Development Tools"
+        VITE[Vite]
+        TS[TypeScript]
+        ESL[ESLint]
+        POST[PostCSS]
+        SWC[SWC Compiler]
+    end
+
+    subgraph "Frontend Framework"
+        REACT[React]
+        style REACT fill:#61dafb,stroke:#333
+        TAIL[TailwindCSS]
+        SHADCN[shadcn/ui]
+        ROUTER[React Router]
+        QUERY[React Query]
+        LUCIDE[Lucide Icons]
+    end
+
+    subgraph "State & Data Management"
+        SUPABASE[Supabase Client]
+        style SUPABASE fill:#3ecf8e,stroke:#333
+        ZOD[Zod Schema]
+        REACT_HOOK[React Hook Form]
+        DATE_FNS[date-fns]
+    end
+
+    subgraph "Testing Infrastructure"
+        VITEST[Vitest]
+        style VITEST fill:#729b1b,stroke:#333
+        RTL[React Testing Library]
+        MSW[Mock Service Worker]
+        JEST_DOM[jest-dom]
+    end
+
+    subgraph "Backend Services"
+        SUP_AUTH[Supabase Auth]
+        SUP_DB[Supabase Database]
+        SUP_STORAGE[Supabase Storage]
+        SUP_REALTIME[Supabase Realtime]
+    end
+
+    %% Development Connections
+    VITE --> REACT
+    TS --> REACT
+    ESL --> TS
+    POST --> TAIL
+    SWC --> TS
+
+    %% Frontend Connections
+    REACT --> SHADCN
+    REACT --> ROUTER
+    REACT --> QUERY
+    TAIL --> SHADCN
+    LUCIDE --> SHADCN
+
+    %% State Management Connections
+    QUERY --> SUPABASE
+    ZOD --> REACT_HOOK
+    SUPABASE --> SUP_AUTH
+    SUPABASE --> SUP_DB
+    SUPABASE --> SUP_STORAGE
+    SUPABASE --> SUP_REALTIME
+
+    %% Testing Connections
+    VITEST --> RTL
+    RTL --> JEST_DOM
+    MSW --> VITEST
+
+    classDef default fill:#f9f9f9,stroke:#333,stroke-width:2px;
+    classDef primary fill:#e1e1e1,stroke:#333,stroke-width:2px;
+    classDef service fill:#bbf,stroke:#333,stroke-width:2px;
+
+    class SUP_AUTH,SUP_DB,SUP_STORAGE,SUP_REALTIME service;
+    class VITE,TS,ESL,POST,SWC primary;
+```
+
 ## Application Layout
 
 ### 🎨 UI Structure
