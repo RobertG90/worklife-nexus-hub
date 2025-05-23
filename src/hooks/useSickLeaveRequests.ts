@@ -11,7 +11,7 @@ export interface SickLeaveRequest {
   reason: string;
   status: string;
   created_at: string;
-  user_id: string;
+  user_id: string | null;
 }
 
 export function useSickLeaveRequests() {
@@ -21,14 +21,12 @@ export function useSickLeaveRequests() {
   const { data: requests, isLoading } = useQuery({
     queryKey: ['sick-leave-requests'],
     queryFn: async () => {
-      // Use type assertion to handle the table access
       const { data, error } = await supabase
-        .from('sick_leave_requests' as any)
+        .from('sick_leave_requests')
         .select('*')
         .order('created_at', { ascending: false });
       
       if (error) throw error;
-      // Add a double type assertion to safely convert the data
       return (data as unknown) as SickLeaveRequest[];
     },
   });
@@ -40,19 +38,16 @@ export function useSickLeaveRequests() {
       leaveType: string;
       reason: string;
     }) => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('User not authenticated');
-
       const { data, error } = await supabase
-        .from('sick_leave_requests' as any)
+        .from('sick_leave_requests')
         .insert({
           start_date: requestData.startDate,
           end_date: requestData.endDate,
           leave_type: requestData.leaveType,
           reason: requestData.reason,
           status: 'pending',
-          user_id: user.id,
-        } as any)
+          user_id: null, // No authentication required
+        })
         .select()
         .single();
 
@@ -63,7 +58,7 @@ export function useSickLeaveRequests() {
       queryClient.invalidateQueries({ queryKey: ['sick-leave-requests'] });
       toast({
         title: 'Success!',
-        description: 'Your sick leave request has been submitted and saved to the database.',
+        description: 'Your sick leave request has been submitted successfully.',
         variant: 'success'
       });
     },
