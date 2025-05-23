@@ -1,28 +1,15 @@
 
-import React, { useState } from 'react';
-import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
+import React from 'react';
 import { Badge } from '@/components/ui/badge';
-import { Wrench, AlertTriangle, Camera } from 'lucide-react';
+import { Wrench, AlertTriangle } from 'lucide-react';
+import { Card } from '@/components/ui/card';
+import { MaintenanceForm } from '@/components/forms/MaintenanceForm';
 
 export function MaintenanceSection() {
-  const [issueType, setIssueType] = useState('electrical');
-
   const recentReports = [
     { id: 1, issue: 'Flickering lights in Conference Room B', location: 'Floor 2', status: 'in-progress', priority: 'medium', date: '2024-01-20' },
     { id: 2, issue: 'Broken AC in Office 205', location: 'Floor 2', status: 'resolved', priority: 'high', date: '2024-01-18' },
     { id: 3, issue: 'Leaky faucet in Kitchen', location: 'Floor 1', status: 'pending', priority: 'low', date: '2024-01-19' },
-  ];
-
-  const issueTypes = [
-    { id: 'electrical', label: 'Electrical', icon: '⚡', color: 'text-yellow-600' },
-    { id: 'plumbing', label: 'Plumbing', icon: '🚿', color: 'text-blue-600' },
-    { id: 'hvac', label: 'HVAC', icon: '❄️', color: 'text-cyan-600' },
-    { id: 'security', label: 'Security', icon: '🔒', color: 'text-red-600' },
-    { id: 'cleaning', label: 'Cleaning', icon: '🧹', color: 'text-green-600' },
-    { id: 'other', label: 'Other', icon: '🔧', color: 'text-gray-600' },
   ];
 
   return (
@@ -41,91 +28,7 @@ export function MaintenanceSection() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Report New Issue */}
         <div className="lg:col-span-2">
-          <Card className="p-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-6">Report Maintenance Issue</h2>
-            
-            <div className="space-y-6">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-3">Issue Category</label>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                  {issueTypes.map((type) => (
-                    <button
-                      key={type.id}
-                      onClick={() => setIssueType(type.id)}
-                      className={
-                        issueType === type.id
-                          ? 'p-3 rounded-lg border border-orange-500 bg-orange-50 text-orange-700 text-center transition-colors'
-                          : 'p-3 rounded-lg border border-gray-200 hover:border-gray-300 text-center transition-colors'
-                      }
-                    >
-                      <div className="text-xl mb-1">{type.icon}</div>
-                      <div className="text-sm font-medium">{type.label}</div>
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Location</label>
-                  <select className="w-full p-2 border border-gray-300 rounded-md">
-                    <option>Floor 1 - Lobby</option>
-                    <option>Floor 1 - Kitchen</option>
-                    <option>Floor 1 - Bathroom</option>
-                    <option>Floor 2 - Open Office</option>
-                    <option>Floor 2 - Conference Rooms</option>
-                    <option>Floor 2 - Break Room</option>
-                    <option>Floor 3 - Executive Offices</option>
-                    <option>Parking Garage</option>
-                    <option>Other</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Priority Level</label>
-                  <select className="w-full p-2 border border-gray-300 rounded-md">
-                    <option value="low">Low - Can wait</option>
-                    <option value="medium">Medium - Should be fixed soon</option>
-                    <option value="high">High - Urgent</option>
-                    <option value="emergency">Emergency - Safety issue</option>
-                  </select>
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Issue Description</label>
-                <Textarea 
-                  placeholder="Please describe the issue in detail..."
-                  className="h-32"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Photo Evidence (Optional)</label>
-                <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-gray-400 transition-colors cursor-pointer">
-                  <Camera className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-                  <p className="text-sm text-gray-600">Click to upload photos or drag and drop</p>
-                  <p className="text-xs text-gray-500 mt-1">PNG, JPG up to 10MB each</p>
-                </div>
-              </div>
-
-              <div className="bg-purple-50 p-4 rounded-lg">
-                <div className="flex items-start space-x-3">
-                  <div className="text-purple-500">🤖</div>
-                  <div>
-                    <h4 className="font-medium text-purple-900">Smart Routing</h4>
-                    <p className="text-sm text-purple-700 mt-1">
-                      Your report will be automatically assigned to the right maintenance team 
-                      based on the issue type and priority level.
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <Button className="w-full bg-orange-600 hover:bg-orange-700">
-                Submit Maintenance Request
-              </Button>
-            </div>
-          </Card>
+          <MaintenanceForm />
         </div>
 
         {/* Sidebar */}

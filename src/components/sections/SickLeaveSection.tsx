@@ -1,15 +1,11 @@
 
-import React, { useState } from 'react';
-import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
+import React from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Calendar, Clock, FileText, Heart } from 'lucide-react';
+import { Card } from '@/components/ui/card';
+import { SickLeaveForm } from '@/components/forms/SickLeaveForm';
 
 export function SickLeaveSection() {
-  const [leaveType, setLeaveType] = useState('sick');
-
   const recentRequests = [
     { id: 1, date: '2024-01-15', days: 2, status: 'approved', reason: 'Flu symptoms' },
     { id: 2, date: '2024-01-08', days: 1, status: 'approved', reason: 'Medical appointment' },
@@ -32,66 +28,7 @@ export function SickLeaveSection() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Submit New Request */}
         <div className="lg:col-span-2">
-          <Card className="p-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-6">Submit New Sick Leave Request</h2>
-            
-            <div className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Start Date</label>
-                  <Input type="date" className="w-full" />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">End Date</label>
-                  <Input type="date" className="w-full" />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Leave Type</label>
-                <div className="grid grid-cols-3 gap-3">
-                  {['sick', 'medical', 'emergency'].map((type) => (
-                    <button
-                      key={type}
-                      onClick={() => setLeaveType(type)}
-                      className={`p-3 rounded-lg border text-center capitalize transition-colors ${
-                        leaveType === type
-                          ? 'border-red-500 bg-red-50 text-red-700'
-                          : 'border-gray-200 hover:border-gray-300'
-                      }`}
-                    >
-                      {type}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Reason (Optional)</label>
-                <Textarea 
-                  placeholder="Brief description of your condition..."
-                  className="w-full h-24"
-                />
-              </div>
-
-              <div className="bg-blue-50 p-4 rounded-lg">
-                <div className="flex items-start space-x-3">
-                  <div className="text-blue-500">💡</div>
-                  <div>
-                    <h4 className="font-medium text-blue-900">Smart Automation</h4>
-                    <p className="text-sm text-blue-700 mt-1">
-                      Your request will be automatically routed to your manager and HR. 
-                      You'll receive instant confirmation and calendar updates.
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <Button className="w-full bg-red-600 hover:bg-red-700">
-                Submit Sick Leave Request
-              </Button>
-            </div>
-          </Card>
+          <SickLeaveForm />
         </div>
 
         {/* Sidebar Info */}
