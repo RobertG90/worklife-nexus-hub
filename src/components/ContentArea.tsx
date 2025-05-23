@@ -9,7 +9,7 @@ import { ExpenseSection } from './sections/ExpenseSection';
 import { UserProfileSection } from './sections/UserProfileSection';
 import { Menu } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import Dashboard from './Dashboard';
+import { Dashboard } from './Dashboard';
 
 interface ContentAreaProps {
   activeSection: string;

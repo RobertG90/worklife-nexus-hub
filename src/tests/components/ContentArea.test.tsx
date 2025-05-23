@@ -1,3 +1,4 @@
+
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, waitFor } from '../utils/test-utils';
 import { ContentArea } from '@/components/ContentArea';
@@ -6,6 +7,7 @@ import { HttpResponse, http } from 'msw';
 
 describe('ContentArea Component', () => {
   const mockOnSectionChange = vi.fn();
+  const mockOnMenuToggle = vi.fn();
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -33,7 +35,7 @@ describe('ContentArea Component', () => {
 
   sections.forEach(section => {
     it(`renders ${section.id} section correctly`, () => {
-      render(<ContentArea activeSection={section.id} onSectionChange={mockOnSectionChange} />);
+      render(<ContentArea activeSection={section.id} onSectionChange={mockOnSectionChange} onMenuToggle={mockOnMenuToggle} />);
       expect(screen.getByRole('heading', { name: new RegExp(section.title, 'i') })).toBeInTheDocument();
     });
   });
@@ -46,7 +48,7 @@ describe('ContentArea Component', () => {
         return HttpResponse.json({});
       })
     );
-    render(<ContentArea activeSection="dashboard" onSectionChange={mockOnSectionChange} />);
+    render(<ContentArea activeSection="dashboard" onSectionChange={mockOnSectionChange} onMenuToggle={mockOnMenuToggle} />);
     expect(screen.getByRole('progressbar')).toBeInTheDocument();
   });
 
@@ -57,7 +59,7 @@ describe('ContentArea Component', () => {
         return new HttpResponse(null, { status: 500 });
       })
     );
-    render(<ContentArea activeSection="dashboard" onSectionChange={mockOnSectionChange} />);
+    render(<ContentArea activeSection="dashboard" onSectionChange={mockOnSectionChange} onMenuToggle={mockOnMenuToggle} />);
     await waitFor(() => {
       expect(screen.getByRole('alert')).toHaveTextContent(/Something went wrong/i);
     });
@@ -66,19 +68,19 @@ describe('ContentArea Component', () => {
   // Section transitions
   it('handles section transitions', async () => {
     const { rerender } = render(
-      <ContentArea activeSection="dashboard" onSectionChange={mockOnSectionChange} />
+      <ContentArea activeSection="dashboard" onSectionChange={mockOnSectionChange} onMenuToggle={mockOnMenuToggle} />
     );
 
     expect(screen.getByRole('heading', { name: /Welcome back/i })).toBeInTheDocument();
 
-    rerender(<ContentArea activeSection="sick-leave" onSectionChange={mockOnSectionChange} />);
+    rerender(<ContentArea activeSection="sick-leave" onSectionChange={mockOnSectionChange} onMenuToggle={mockOnMenuToggle} />);
     expect(screen.getByRole('heading', { name: /Sick Leave Management/i })).toBeInTheDocument();
   });
 
   // Form submissions
   it('handles form submissions in different sections', async () => {
     const { user } = render(
-      <ContentArea activeSection="sick-leave" onSectionChange={mockOnSectionChange} />
+      <ContentArea activeSection="sick-leave" onSectionChange={mockOnSectionChange} onMenuToggle={mockOnMenuToggle} />
     );
 
     const submitButton = screen.getByRole('button', { name: /Submit Request/i });
@@ -88,7 +90,7 @@ describe('ContentArea Component', () => {
 
   // Mobile responsiveness
   it('applies mobile-responsive classes', () => {
-    render(<ContentArea activeSection="dashboard" onSectionChange={mockOnSectionChange} />);
+    render(<ContentArea activeSection="dashboard" onSectionChange={mockOnSectionChange} onMenuToggle={mockOnMenuToggle} />);
     const container = screen.getByRole('main');
     expect(container).toHaveClass('p-4', 'md:p-6', 'lg:p-8');
   });
@@ -97,24 +99,24 @@ describe('ContentArea Component', () => {
   it('shows empty states for each section', () => {
     sections.forEach(section => {
       const { rerender } = render(
-        <ContentArea activeSection={section.id} onSectionChange={mockOnSectionChange} />
+        <ContentArea activeSection={section.id} onSectionChange={mockOnSectionChange} onMenuToggle={mockOnMenuToggle} />
       );
       const content = screen.getByRole('region', { name: new RegExp(section.title, 'i') });
       expect(content).toBeInTheDocument();
-      rerender(<ContentArea activeSection="dashboard" onSectionChange={mockOnSectionChange} />);
+      rerender(<ContentArea activeSection="dashboard" onSectionChange={mockOnSectionChange} onMenuToggle={mockOnMenuToggle} />);
     });
   });
 
   // Accessibility
   it('has proper ARIA attributes', () => {
-    render(<ContentArea activeSection="dashboard" onSectionChange={mockOnSectionChange} />);
+    render(<ContentArea activeSection="dashboard" onSectionChange={mockOnSectionChange} onMenuToggle={mockOnMenuToggle} />);
     const mainContent = screen.getByRole('main');
     expect(mainContent).toHaveAttribute('aria-label', 'Main content');
   });
 
   // Animation tests
   it('applies transition classes', () => {
-    render(<ContentArea activeSection="dashboard" onSectionChange={mockOnSectionChange} />);
+    render(<ContentArea activeSection="dashboard" onSectionChange={mockOnSectionChange} onMenuToggle={mockOnMenuToggle} />);
     const content = screen.getByRole('main');
     expect(content).toHaveClass('transition-all', 'duration-300');
   });
@@ -135,7 +137,7 @@ describe('ContentArea Component', () => {
   // Keyboard navigation
   it('supports keyboard navigation', async () => {
     const { user } = render(
-      <ContentArea activeSection="dashboard" onSectionChange={mockOnSectionChange} />
+      <ContentArea activeSection="dashboard" onSectionChange={mockOnSectionChange} onMenuToggle={mockOnMenuToggle} />
     );
     
     const firstButton = screen.getAllByRole('button')[0];
