@@ -7,6 +7,7 @@ import { TravelSection } from './sections/TravelSection';
 import { MaintenanceSection } from './sections/MaintenanceSection';
 import { BookingSection } from './sections/BookingSection';
 import { ExpenseSection } from './sections/ExpenseSection';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 interface ContentAreaProps {
   activeSection: string;
@@ -14,6 +15,18 @@ interface ContentAreaProps {
 }
 
 export function ContentArea({ activeSection, onSectionChange }: ContentAreaProps) {
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  // Update URL when section changes
+  React.useEffect(() => {
+    if (location.pathname !== `/${activeSection}` && activeSection !== 'dashboard') {
+      navigate(`/${activeSection}`);
+    } else if (activeSection === 'dashboard' && location.pathname !== '/') {
+      navigate('/');
+    }
+  }, [activeSection, navigate, location.pathname]);
+
   const renderContent = () => {
     switch (activeSection) {
       case 'dashboard':
